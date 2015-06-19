@@ -18,12 +18,12 @@ Oakpubsub.getTopic = function getTopic(topic_title, options) {
     return Oakpubsub.pubsub.topic(topic_title, options);
 }
 
-Oakpubsub.ReallyPubSubscribe = function ReallyPubSubscribe(topic, subscription_id) {
+Oakpubsub.getOrCreateSubscription = function getOrCreateSubscription(topic, subscription_id) {
 
     return Oakpubsub.CreateSubscription(topic, subscription_id)
     .catch(function(error) {
 
-        if (error.code !== 409) {   //409: Resource already exists in the project
+        if (!error.code || error.code !== 409) {   //409: Resource already exists in the project
             throw error;
         }
         return topic.subscription(subscription_id);
