@@ -18,22 +18,22 @@ Oakpubsub.getTopic = function getTopic(topic_title, options) {
     return Oakpubsub.pubsub.topic(topic_title, options);
 }
 
-Oakpubsub.getOrCreateSubscription = function getOrCreateSubscription(topic, subscription_id) {
+Oakpubsub.getOrCreateSubscription = function getOrCreateSubscription(topic, subscription_id, options) {
 
-    return Oakpubsub.CreateSubscription(topic, subscription_id)
+    return Oakpubsub.CreateSubscription(topic, subscription_id, options)
     .catch(function(error) {
 
         if (!error.code || error.code !== 409) {   //409: Resource already exists in the project
             throw error;
         }
-        return topic.subscription(subscription_id);
+        return topic.subscription(subscription_id, options);
     })
 }
 
-Oakpubsub.CreateSubscription = function CreateSubscription(topic, subscription_id) {
+Oakpubsub.CreateSubscription = function CreateSubscription(topic, subscription_id, options) {
 
     var f = function(resolve, reject) {
-        topic.subscribe(subscription_id, function(err, subscription) {
+        topic.subscribe(subscription_id, options, function(err, subscription) {
             if (err) {
                 return reject(err);
             }
@@ -73,6 +73,22 @@ Oakpubsub.ack = function ack(subscription, ackIds) {
         }
         subscription.ack(ackIds, onComplete);
     }
+    return new _Promise(f);
+}
+
+Oakpubsub.pull = function pull(subscription, options) {
+
+    var f = function(resolve, reject) {
+
+        var onComplete = function(err, messages, apiResponse) {
+            if (err) {
+                return reject(err);
+            }
+            return resolve(messages);
+        }
+        subscription.pull(options, onComplete);
+    }
+
     return new _Promise(f);
 }
 
