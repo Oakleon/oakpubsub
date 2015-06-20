@@ -71,7 +71,12 @@ Oakpubsub.ack = function ack(subscription, ackIds) {
             }
             resolve(apiResponse);
         }
-        subscription.ack(ackIds, onComplete);
+
+        if (Array.isArray(ackIds) && !ackIds.length) {
+            return resolve();
+        }
+
+        return subscription.ack(ackIds, onComplete);
     }
     return new _Promise(f);
 }
@@ -81,6 +86,7 @@ Oakpubsub.pull = function pull(subscription, options) {
     var f = function(resolve, reject) {
 
         var onComplete = function(err, messages, apiResponse) {
+
             if (err) {
                 return reject(err);
             }
@@ -88,7 +94,6 @@ Oakpubsub.pull = function pull(subscription, options) {
         }
         subscription.pull(options, onComplete);
     }
-
     return new _Promise(f);
 }
 
