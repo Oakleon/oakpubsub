@@ -22,7 +22,8 @@
   },
   "homepage": "https://github.com/Oakleon/oakpubsub#readme",
   "dependencies": {
-    "gcloud": "^0.15.0"
+    "gcloud": "^0.15.0",
+    "lodash": "^3.9.3"
   },
   "devDependencies": {
     "babel": "^5.5.6",

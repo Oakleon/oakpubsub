@@ -4,23 +4,40 @@ var _Promise = require('bluebird');
 
 var Oakpubsub = {};
 
-Oakpubsub.init = function init(options) {
+Oakpubsub.get_pubsub = function get_pubsub(options) {
 
-    Oakpubsub.gcloud = require('gcloud')({
-      projectId: options.id,
-      keyFilename: options.keyfile //TODO allow GCE scopes
-    });
+    //options.keyFilename is required if you lack the GCE scope
 
-    Oakpubsub.pubsub = Oakpubsub.gcloud.pubsub();
+    if (!options.projectId) {
+        throw new Error('a pubsub projectId is required');
+    }
+
+    return require('gcloud').pubsub(options);
 }
 
-Oakpubsub.getTopic = function getTopic(topic_title, options) {
-    return Oakpubsub.pubsub.topic(topic_title, options);
+Oakpubsub.get_topic = function get_topic(pubsub, topic_title, options) {
+    return pubsub.topic(topic_title, options);
 }
 
-Oakpubsub.getOrCreateSubscription = function getOrCreateSubscription(topic, subscription_id, options) {
+Oakpubsub.create_topic = function create_topic(pubsub, topic_title) {
 
-    return Oakpubsub.CreateSubscription(topic, subscription_id, options)
+    var f = function(resolve, reject) {
+
+        var onComplete = function(error, topic, apiResponse) {
+
+            if (error) {
+                return reject(error);
+            }
+            resolve(topic);
+        }
+        pubsub.createTopic(topic_title, onComplete);
+    }
+    return new _Promise(f);
+}
+
+Oakpubsub.get_or_create_subscription = function get_or_create_subscription(topic, subscription_id, options) {
+
+    return Oakpubsub.create_subscription(topic, subscription_id, options)
     .catch(function(error) {
 
         if (!error.code || error.code !== 409) {   //409: Resource already exists in the project
@@ -30,7 +47,7 @@ Oakpubsub.getOrCreateSubscription = function getOrCreateSubscription(topic, subs
     })
 }
 
-Oakpubsub.CreateSubscription = function CreateSubscription(topic, subscription_id, options) {
+Oakpubsub.create_subscription = function create_subscription(topic, subscription_id, options) {
 
     var f = function(resolve, reject) {
         topic.subscribe(subscription_id, options, function(err, subscription) {
@@ -59,6 +76,44 @@ Oakpubsub.publish = function publish(topic, message) {
     return new _Promise(f);
 }
 
+Oakpubsub.delete_topic = function delete_topic(topic) {
+
+
+    var f = function(resolve, reject) {
+
+        var onComplete = function(error, apiResponse) {
+
+            if (error) {
+                return reject(error);
+            }
+
+            resolve(apiResponse);
+        }
+
+        topic.delete(onComplete);
+    }
+    return new _Promise(f);
+}
+
+Oakpubsub.delete_subscription = function delete_subscription(subscription) {
+
+
+    var f = function(resolve, reject) {
+
+        var onComplete = function(error, apiResponse) {
+
+            if (error) {
+                return reject(error);
+            }
+
+            resolve(apiResponse);
+        }
+
+        subscription.delete(onComplete);
+    }
+    return new _Promise(f);
+}
+
 //ackIds may be a single string or Array of strings
 Oakpubsub.ack = function ack(subscription, ackIds) {
 
@@ -82,6 +137,8 @@ Oakpubsub.ack = function ack(subscription, ackIds) {
 }
 
 Oakpubsub.pull = function pull(subscription, options) {
+
+    options = options || {};
 
     var f = function(resolve, reject) {
 
