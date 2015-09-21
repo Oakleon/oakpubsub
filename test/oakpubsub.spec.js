@@ -1,7 +1,7 @@
 var _Fs = require('fs');
 
 var _Assert = require("better-assert");
-var _Lo = require('lodash');
+var _Lo     = require('lodash');
 
 var _Oakpubsub = require("../src/oakpubsub");
 
