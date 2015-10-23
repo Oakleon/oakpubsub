@@ -1,6 +1,6 @@
 {
   "name": "oakpubsub",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "google pubsub via gcloud with promise wrapper",
   "main": "build/oakpubsub.js",
   "scripts": {
