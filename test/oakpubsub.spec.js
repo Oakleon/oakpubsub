@@ -72,7 +72,6 @@ describe('Oakpubsub', function() {
     });
 
 
-
     describe('#Oakpubsub.create_topic_P()', function(){
 
         it('creates and returns a pubsub topic', function(done){
