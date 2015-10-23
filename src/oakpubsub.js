@@ -1,5 +1,6 @@
 "use strict";
 
+var _Gcloud  = require('gcloud');
 var _Promise = require('bluebird');
 
 var Oakpubsub = {};
@@ -12,7 +13,7 @@ Oakpubsub.get_pubsub = function get_pubsub(options) {
         throw new Error('a pubsub projectId is required');
     }
 
-    return require('gcloud').pubsub(options);
+    return _Gcloud.pubsub(options);
 }
 
 Oakpubsub.get_topic = function get_topic(pubsub, topic_title, options) {
