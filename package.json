@@ -12,8 +12,9 @@
   },
   "keywords": [
     "node",
-    "oakleon",
+    "promises",
     "gcloud",
+    "google",
     "pubsub"
   ],
   "author": "chris@oakleon.com",

@@ -19,7 +19,7 @@ export function get_topic(pubsub, topic_title, options) {
     return pubsub.topic(topic_title, options);
 }
 
-export function create_topic(pubsub, topic_title) {
+export function create_topic_P(pubsub, topic_title) {
 
     let f = function(resolve, reject) {
 
@@ -35,19 +35,23 @@ export function create_topic(pubsub, topic_title) {
     return new _Promise(f);
 }
 
-export function get_or_create_subscription(topic, subscription_id, options) {
+export function get_or_create_subscription_P(topic, subscription_id, options) {
 
-    return create_subscription(topic, subscription_id, options)
+    return create_subscription_P(topic, subscription_id, options)
     .catch(function(error) {
 
         if (!error.code || error.code !== 409) {   //409: Resource already exists in the project
             throw error;
         }
-        return topic.subscription(subscription_id, options);
+        return get_subscription(topic, subscription_id, options);
     });
 }
 
-export function create_subscription(topic, subscription_id, options) {
+export function get_subscription(topic, subscription_id, options) {
+    return topic.subscription(subscription_id, options);
+}
+
+export function create_subscription_P(topic, subscription_id, options) {
 
     let f = function(resolve, reject) {
         topic.subscribe(subscription_id, options, function(err, subscription) {
@@ -60,7 +64,7 @@ export function create_subscription(topic, subscription_id, options) {
     return new _Promise(f);
 }
 
-export function publish(topic, message) {
+export function publish_P(topic, message) {
 
     let f = function(resolve, reject) {
 
@@ -76,7 +80,7 @@ export function publish(topic, message) {
     return new _Promise(f);
 }
 
-export function delete_topic(topic) {
+export function delete_topic_P(topic) {
 
     let f = function(resolve, reject) {
 
@@ -94,7 +98,7 @@ export function delete_topic(topic) {
     return new _Promise(f);
 }
 
-export function delete_subscription(subscription) {
+export function delete_subscription_P(subscription) {
 
     let f = function(resolve, reject) {
 
@@ -113,7 +117,7 @@ export function delete_subscription(subscription) {
 }
 
 //ackIds may be a single string or Array of strings
-export function ack(subscription, ackIds) {
+export function ack_P(subscription, ackIds) {
 
     let f = function(resolve, reject) {
 
@@ -134,7 +138,7 @@ export function ack(subscription, ackIds) {
     return new _Promise(f);
 }
 
-export function pull(subscription, options) {
+export function pull_P(subscription, options) {
 
     options = options || {};
 

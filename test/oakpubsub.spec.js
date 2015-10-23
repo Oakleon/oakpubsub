@@ -46,24 +46,37 @@ describe('Oakpubsub', function() {
     let test_message          = _Lo.clone(original_test_message);
     let test_message_id;
 
-    after(async () => {
+    //Cleanup after any previously failed tests
+    before(async () => {
 
-        await _Oakpubsub.delete_subscription(subscription);
-        await _Oakpubsub.delete_topic(topic);
-    });
+        pubsub = _Oakpubsub.get_pubsub(get_init_options());
+        _Assert(pubsub);
 
+        let del_topic        = _Oakpubsub.get_topic(pubsub, _topic_name);
+        let del_subscription = _Oakpubsub.get_subscription(del_topic, _subscription_name);
 
-    describe('#Oakpubsub.get_pubsub()', function(){
-        it('authenticates and returns a pubsub object', function(){
-            pubsub = _Oakpubsub.get_pubsub(get_init_options());
-            _Assert(pubsub);
+        await _Oakpubsub.delete_subscription_P(del_subscription)
+        .catch((err) => {
+            //ignore if this subscription does not exist
+        });
+
+        await _Oakpubsub.delete_topic_P(del_topic)
+        .catch((err) => {
+            //ignore if this topic does not exist
         });
     });
 
-    describe('#Oakpubsub.create_topic()', function(){
+    after(async () => {
+        await _Oakpubsub.delete_subscription_P(subscription);
+        await _Oakpubsub.delete_topic_P(topic);
+    });
+
+
+
+    describe('#Oakpubsub.create_topic_P()', function(){
 
         it('creates and returns a pubsub topic', function(done){
-            _Oakpubsub.create_topic(pubsub, _topic_name)
+            _Oakpubsub.create_topic_P(pubsub, _topic_name)
             .then(function(t) {
                 topic = t;
                 _Assert(topic);
@@ -85,9 +98,9 @@ describe('Oakpubsub', function() {
         });
     });
 
-    describe('#Oakpubsub.get_or_create_subscription()', function(){
+    describe('#Oakpubsub.get_or_create_subscription_P()', function(){
         it('returns a pubsub subscription', function(done){
-            _Oakpubsub.get_or_create_subscription(topic, _subscription_name)
+            _Oakpubsub.get_or_create_subscription_P(topic, _subscription_name)
             .then(function(s) {
 
                 subscription = s;
@@ -100,12 +113,12 @@ describe('Oakpubsub', function() {
         });
     });
 
-    describe('#Oakpubsub.publish()', function(){
+    describe('#Oakpubsub.publish_P()', function(){
         it('publish a message to pubsub', function(done){
 
             let message_ids;
 
-            _Oakpubsub.publish(topic, test_message)
+            _Oakpubsub.publish_P(topic, test_message)
             .then(function(response) {
                 _Assert(response);
                 message_ids = response[0];
@@ -123,12 +136,12 @@ describe('Oakpubsub', function() {
         });
     });
 
-    describe('#Oakpubsub.pull() and ack()', function(){
+    describe('#Oakpubsub.pull_P() and ack_P()', function(){
         let ack_id;
 
         it('pulls a message from pubsub', function(done){
 
-            _Oakpubsub.pull(subscription)
+            _Oakpubsub.pull_P(subscription)
             .then(function(messages) {
 
                 _Assert(messages);
@@ -151,7 +164,7 @@ describe('Oakpubsub', function() {
 
         it('acks a message from pubsub', function(done){
 
-            _Oakpubsub.ack(subscription, ack_id)
+            _Oakpubsub.ack_P(subscription, ack_id)
             .then(function(r) {
                 _Assert(r);
                 done();
