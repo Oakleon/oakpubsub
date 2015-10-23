@@ -21,9 +21,9 @@ export function get_topic(pubsub, topic_title, options) {
 
 export function create_topic(pubsub, topic_title) {
 
-    var f = function(resolve, reject) {
+    let f = function(resolve, reject) {
 
-        var onComplete = function(error, topic, apiResponse) {
+        let onComplete = function(error, topic, apiResponse) {
 
             if (error) {
                 return reject(error);
@@ -49,7 +49,7 @@ export function get_or_create_subscription(topic, subscription_id, options) {
 
 export function create_subscription(topic, subscription_id, options) {
 
-    var f = function(resolve, reject) {
+    let f = function(resolve, reject) {
         topic.subscribe(subscription_id, options, function(err, subscription) {
             if (err) {
                 return reject(err);
@@ -62,9 +62,9 @@ export function create_subscription(topic, subscription_id, options) {
 
 export function publish(topic, message) {
 
-    var f = function(resolve, reject) {
+    let f = function(resolve, reject) {
 
-        var onComplete = function(error, messageIds, apiResponse) {
+        let onComplete = function(error, messageIds, apiResponse) {
 
             if (error) {
                 return reject(error);
@@ -78,10 +78,9 @@ export function publish(topic, message) {
 
 export function delete_topic(topic) {
 
+    let f = function(resolve, reject) {
 
-    var f = function(resolve, reject) {
-
-        var onComplete = function(error, apiResponse) {
+        let onComplete = function(error, apiResponse) {
 
             if (error) {
                 return reject(error);
@@ -97,10 +96,9 @@ export function delete_topic(topic) {
 
 export function delete_subscription(subscription) {
 
+    let f = function(resolve, reject) {
 
-    var f = function(resolve, reject) {
-
-        var onComplete = function(error, apiResponse) {
+        let onComplete = function(error, apiResponse) {
 
             if (error) {
                 return reject(error);
@@ -117,9 +115,9 @@ export function delete_subscription(subscription) {
 //ackIds may be a single string or Array of strings
 export function ack(subscription, ackIds) {
 
-    var f = function(resolve, reject) {
+    let f = function(resolve, reject) {
 
-        var onComplete = function(error, apiResponse) {
+        let onComplete = function(error, apiResponse) {
 
             if (error) {
                 return reject(error);
@@ -140,9 +138,9 @@ export function pull(subscription, options) {
 
     options = options || {};
 
-    var f = function(resolve, reject) {
+    let f = function(resolve, reject) {
 
-        var onComplete = function(err, messages, apiResponse) {
+        let onComplete = function(err, messages, apiResponse) {
 
             if (err) {
                 return reject(err);

@@ -5,6 +5,8 @@ import _Lo from 'lodash';
 
 import * as _Oakpubsub from '../src/oakpubsub';
 
+//workaround for errors not propagating from async await
+process.on('unhandledRejection', err => { throw err; });
 
 function read_project_id_from_file(filename) {
 
@@ -15,12 +17,12 @@ function read_project_id_from_file(filename) {
     return _Fs.readFileSync(filename, {encoding: 'utf8'}).trim();
 }
 
-var _auth_filename = process.env.GCLOUD_AUTH_FILE || __dirname + '/auth-secret.json';
-var _use_auth_file = _Fs.existsSync(_auth_filename);
-var _project_id    = process.env.GCLOUD_PROJECT_ID || read_project_id_from_file(__dirname + '/auth-project.json');
+let _auth_filename = process.env.GCLOUD_AUTH_FILE || __dirname + '/auth-secret.json';
+let _use_auth_file = _Fs.existsSync(_auth_filename);
+let _project_id    = process.env.GCLOUD_PROJECT_ID || read_project_id_from_file(__dirname + '/auth-project.json');
 
-var _topic_name        = "oakpubsub-spec-topic";
-var _subscription_name = "oakpubsub-spec-subscription";
+let _topic_name        = "oakpubsub-spec-topic";
+let _subscription_name = "oakpubsub-spec-subscription";
 
 function get_init_options() {
     if (_use_auth_file) {
@@ -35,27 +37,19 @@ describe('Oakpubsub', function() {
     this.slow(3000);
     this.timeout(10000);
 
-    var pubsub;
-    var topic;
-    var subscription;
+    let pubsub;
+    let topic;
+    let subscription;
 
     //bug in gcloud library - test_message gets mutated
-    var original_test_message = { data : ['this', 'is', 'a', 'test' ], attributes: { att_key: "att_value" }};
-    var test_message = _Lo.clone(original_test_message);
-    var test_message_id;
+    let original_test_message = { data : ['this', 'is', 'a', 'test' ], attributes: { att_key: "att_value" }};
+    let test_message          = _Lo.clone(original_test_message);
+    let test_message_id;
 
-    after(function(done) {
+    after(async () => {
 
-        _Oakpubsub.delete_subscription(subscription)
-        .then(function(r) {
-            return _Oakpubsub.delete_topic(topic);
-        })
-        .then(function(r) {
-            done();
-        })
-        .catch(function(e) {
-            done(e);
-        });
+        await _Oakpubsub.delete_subscription(subscription);
+        await _Oakpubsub.delete_topic(topic);
     });
 
 
@@ -85,7 +79,7 @@ describe('Oakpubsub', function() {
 
     describe('#Oakpubsub.get_topic()', function(){
         it('returns a pubsub topic', function(){
-            var t2 = _Oakpubsub.get_topic(pubsub, _topic_name);
+            let t2 = _Oakpubsub.get_topic(pubsub, _topic_name);
             _Assert(t2);
             _Assert(t2.projectId === _project_id);
         });
@@ -109,7 +103,7 @@ describe('Oakpubsub', function() {
     describe('#Oakpubsub.publish()', function(){
         it('publish a message to pubsub', function(done){
 
-            var message_ids;
+            let message_ids;
 
             _Oakpubsub.publish(topic, test_message)
             .then(function(response) {
@@ -130,7 +124,7 @@ describe('Oakpubsub', function() {
     });
 
     describe('#Oakpubsub.pull() and ack()', function(){
-        var ack_id;
+        let ack_id;
 
         it('pulls a message from pubsub', function(done){
 
@@ -139,7 +133,7 @@ describe('Oakpubsub', function() {
 
                 _Assert(messages);
 
-                var m = messages[0];
+                let m = messages[0];
                 ack_id = m.ackId;
 
                 _Assert(ack_id);

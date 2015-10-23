@@ -1,7 +1,7 @@
 {
   "name": "oakpubsub",
   "version": "0.1.6",
-  "description": "abstraction layer for pubsub",
+  "description": "google pubsub via gcloud with promise wrapper",
   "main": "build/oakpubsub.js",
   "scripts": {
     "test": "mocha --compilers js:babel/register"
