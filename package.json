@@ -1,6 +1,6 @@
 {
   "name": "oakpubsub",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "abstraction layer for pubsub",
   "main": "build/oakpubsub.js",
   "scripts": {
