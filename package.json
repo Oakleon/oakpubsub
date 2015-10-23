@@ -21,6 +21,7 @@
     "url": "https://github.com/Oakleon/oakpubsub/issues"
   },
   "homepage": "https://github.com/Oakleon/oakpubsub#readme",
+  "license": "MIT",
   "dependencies": {
     "babel-runtime": "^5.8.25",
     "bluebird": "^2.10.2",
