@@ -1,9 +1,10 @@
-var _Fs = require('fs');
+import _Fs from 'fs';
+import _Assert from 'assert';
 
-var _Assert = require("better-assert");
-var _Lo     = require('lodash');
+import _Lo from 'lodash';
 
-var _Oakpubsub = require("../src/oakpubsub");
+import * as _Oakpubsub from '../src/oakpubsub';
+
 
 function read_project_id_from_file(filename) {
 
@@ -54,16 +55,16 @@ describe('Oakpubsub', function() {
         })
         .catch(function(e) {
             done(e);
-        })
-    })
+        });
+    });
 
 
     describe('#Oakpubsub.get_pubsub()', function(){
         it('authenticates and returns a pubsub object', function(){
-            pubsub = _Oakpubsub.get_pubsub(get_init_options())
+            pubsub = _Oakpubsub.get_pubsub(get_init_options());
             _Assert(pubsub);
-        })
-    })
+        });
+    });
 
     describe('#Oakpubsub.create_topic()', function(){
 
@@ -77,9 +78,9 @@ describe('Oakpubsub', function() {
             })
             .catch(function(e) {
                 done(e);
-            })
-        })
-    })
+            });
+        });
+    });
 
 
     describe('#Oakpubsub.get_topic()', function(){
@@ -87,8 +88,8 @@ describe('Oakpubsub', function() {
             var t2 = _Oakpubsub.get_topic(pubsub, _topic_name);
             _Assert(t2);
             _Assert(t2.projectId === _project_id);
-        })
-    })
+        });
+    });
 
     describe('#Oakpubsub.get_or_create_subscription()', function(){
         it('returns a pubsub subscription', function(done){
@@ -101,9 +102,9 @@ describe('Oakpubsub', function() {
             })
             .catch(function(e) {
                 done(e);
-            })
-        })
-    })
+            });
+        });
+    });
 
     describe('#Oakpubsub.publish()', function(){
         it('publish a message to pubsub', function(done){
@@ -124,9 +125,9 @@ describe('Oakpubsub', function() {
             })
             .catch(function(e) {
                 done(e);
-            })
-        })
-    })
+            });
+        });
+    });
 
     describe('#Oakpubsub.pull() and ack()', function(){
         var ack_id;
@@ -151,8 +152,8 @@ describe('Oakpubsub', function() {
             })
             .catch(function(e) {
                 done(e);
-            })
-        })
+            });
+        });
 
         it('acks a message from pubsub', function(done){
 
@@ -163,7 +164,7 @@ describe('Oakpubsub', function() {
             })
             .catch(function(e) {
                 done(e);
-            })
-        })
-    })
-})
+            });
+        });
+    });
+});
