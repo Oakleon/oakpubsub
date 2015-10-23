@@ -1,7 +1,7 @@
 {
   "name": "oakpubsub",
   "version": "0.1.7",
-  "description": "google pubsub via gcloud with promise wrapper",
+  "description": "gcloud-node google pubsub client wrapped in bluebird promises",
   "main": "build/oakpubsub.js",
   "scripts": {
     "test": "mocha --compilers js:babel/register"
