@@ -3,22 +3,45 @@
 import _Gcloud from 'gcloud';
 import _Promise from 'bluebird';
 
+/**
+ * oakpubsub module.
+ * @module oakpubsub
+ */
 
+
+ /**
+  * Get a pubsub object, for use in subsequent module function calls
+  * @param {Object} options passed directly to gcloud-node for i.e. authentication
+  * @returns {Object} an authenticated pubsub object from gcloud-node
+  */
 export function get_pubsub(options) {
 
     //options.keyFilename is required if you lack the GCE scope
 
     if (!options.projectId) {
-        throw new Error('a pubsub projectId is required');
+        throw new Error('a google cloud projectId is required');
     }
 
     return _Gcloud.pubsub(options);
 }
 
+/**
+ * Get a pubsub topic, for use in subsequent module function calls
+ * @param {Object} pubsub gcloud-node pubsub object
+ * @param {Object} topic_title - the name of the topic
+ * @param {Object} [options] - additional gcloud-node options
+ * @returns {Object} an authenticated pubsub object from gcloud-node
+ */
 export function get_topic(pubsub, topic_title, options) {
     return pubsub.topic(topic_title, options);
 }
 
+/**
+ * Remote call to create a google pubsub topic
+ * @param {Object} pubsub gcloud-node pubsub object
+ * @param {Object} topic_title - the name of the topic
+ * @returns {Object} a promise resolving to the topic returned by gcloud-node pubsub#createTopic()
+ */
 export function create_topic_P(pubsub, topic_title) {
 
     let f = function(resolve, reject) {
@@ -35,6 +58,13 @@ export function create_topic_P(pubsub, topic_title) {
     return new _Promise(f);
 }
 
+/**
+ * Remote call to get or create a subscription
+ * @param {Object} topic gcloud-node topic object
+ * @param {Object} subscription_id - the name of the subscription
+ * @param {Object} [options] - additional gcloud-node options
+ * @returns {Object} a promise resolving to the subscription returned by gcloud-node pubsub#createTopic()
+ */
 export function get_or_create_subscription_P(topic, subscription_id, options) {
 
     return create_subscription_P(topic, subscription_id, options)
@@ -47,10 +77,24 @@ export function get_or_create_subscription_P(topic, subscription_id, options) {
     });
 }
 
+/**
+ * Gets a subscription
+ * @param {Object} topic gcloud-node topic object
+ * @param {Object} subscription_id - the name of the subscription
+ * @param {Object} [options] - additional gcloud-node options
+ * @returns {Object} returns a subscription from gcloud-node topic#subscription()
+ */
 export function get_subscription(topic, subscription_id, options) {
     return topic.subscription(subscription_id, options);
 }
 
+/**
+ * Remote call to create a subscription
+ * @param {Object} topic gcloud-node topic object
+ * @param {Object} subscription_id - the name of the subscription
+ * @param {Object} [options] - additional gcloud-node options
+ * @returns {Object} a promise resolving to the subscription returned by gcloud-node topic#subscribe()
+ */
 export function create_subscription_P(topic, subscription_id, options) {
 
     let f = function(resolve, reject) {
@@ -64,6 +108,12 @@ export function create_subscription_P(topic, subscription_id, options) {
     return new _Promise(f);
 }
 
+/**
+ * Remote call to publish a message
+ * @param {Object} topic gcloud-node topic object
+ * @param {Object} message - the message to pass to gcloude-node topic#publish()
+ * @returns {Object} a promise resolving to [messageIds, apiResponse] returned by gcloud-node topic#publish()
+ */
 export function publish_P(topic, message) {
 
     let f = function(resolve, reject) {
@@ -80,6 +130,11 @@ export function publish_P(topic, message) {
     return new _Promise(f);
 }
 
+/**
+ * Remote call to delete a topic
+ * @param {Object} topic gcloud-node topic object
+ * @returns {Object} a promise resolving to apiResponse returned by gcloud-node topic#delete()
+ */
 export function delete_topic_P(topic) {
 
     let f = function(resolve, reject) {
@@ -98,6 +153,11 @@ export function delete_topic_P(topic) {
     return new _Promise(f);
 }
 
+/**
+ * Remote call to delete a subscription
+ * @param {Object} subscription gcloud-node subscription object
+ * @returns {Object} a promise resolving to apiResponse returned by gcloud-node subscription#delete()
+ */
 export function delete_subscription_P(subscription) {
 
     let f = function(resolve, reject) {
@@ -116,7 +176,12 @@ export function delete_subscription_P(subscription) {
     return new _Promise(f);
 }
 
-//ackIds may be a single string or Array of strings
+/**
+ * Remote call to acknowledge completion of message processing
+ * @param {Object} subscription gcloud-node subscription object
+ * @param {(string|string[])} acknowledge IDs
+ * @returns {Object} a promise resolving to apiResponse returned by gcloud-node subscription#ack()
+ */
 export function ack_P(subscription, ackIds) {
 
     let f = function(resolve, reject) {
@@ -138,6 +203,12 @@ export function ack_P(subscription, ackIds) {
     return new _Promise(f);
 }
 
+/**
+ * Remote call to pull messages from server
+ * @param {Object} subscription gcloud-node subscription object
+ * @param {Object} [options] - additional gcloud-node options for subscription#pull()
+ * @returns {Object} a promise resolving to messages returned by gcloud-node subscription#pull()
+ */
 export function pull_P(subscription, options) {
 
     options = options || {};
