@@ -39,7 +39,7 @@ Get a pubsub topic, for use in subsequent module function calls
 | Param | Type | Description |
 | --- | --- | --- |
 | pubsub | <code>Object</code> | gcloud-node pubsub object |
-| topic_title | <code>Object</code> | the name of the topic |
+| topic_title | <code>string</code> | the name of the topic |
 | [options] | <code>Object</code> | additional gcloud-node options |
 
 <a name="module_oakpubsub.create_topic_P"></a>
@@ -52,7 +52,7 @@ Remote call to create a google pubsub topic
 | Param | Type | Description |
 | --- | --- | --- |
 | pubsub | <code>Object</code> | gcloud-node pubsub object |
-| topic_title | <code>Object</code> | the name of the topic |
+| topic_title | <code>string</code> | the name of the topic |
 
 <a name="module_oakpubsub.get_or_create_subscription_P"></a>
 ### oakpubsub.get_or_create_subscription_P(topic, subscription_id, [options]) ⇒ <code>Promise</code>
@@ -64,7 +64,7 @@ Remote call to get or create a subscription
 | Param | Type | Description |
 | --- | --- | --- |
 | topic | <code>Object</code> | gcloud-node topic object |
-| subscription_id | <code>Object</code> | the name of the subscription |
+| subscription_id | <code>string</code> | the name of the subscription |
 | [options] | <code>Object</code> | additional gcloud-node options |
 
 <a name="module_oakpubsub.get_subscription"></a>
@@ -77,7 +77,7 @@ Gets a subscription
 | Param | Type | Description |
 | --- | --- | --- |
 | topic | <code>Object</code> | gcloud-node topic object |
-| subscription_id | <code>Object</code> | the name of the subscription |
+| subscription_id | <code>string</code> | the name of the subscription |
 | [options] | <code>Object</code> | additional gcloud-node options |
 
 <a name="module_oakpubsub.create_subscription_P"></a>
@@ -90,7 +90,7 @@ Remote call to create a subscription
 | Param | Type | Description |
 | --- | --- | --- |
 | topic | <code>Object</code> | gcloud-node topic object |
-| subscription_id | <code>Object</code> | the name of the subscription |
+| subscription_id | <code>string</code> | the name of the subscription |
 | [options] | <code>Object</code> | additional gcloud-node options |
 
 <a name="module_oakpubsub.publish_P"></a>
@@ -103,7 +103,7 @@ Remote call to publish a message
 | Param | Type | Description |
 | --- | --- | --- |
 | topic | <code>Object</code> | gcloud-node topic object |
-| message | <code>Object</code> | the message to pass to gcloude-node topic#publish() |
+| message | <code>Object</code> &#124; <code>Array.&lt;Object&gt;</code> | the message(s) to pass to gcloude-node topic#publish() |
 
 <a name="module_oakpubsub.delete_topic_P"></a>
 ### oakpubsub.delete_topic_P(topic) ⇒ <code>Promise</code>

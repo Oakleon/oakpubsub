@@ -28,7 +28,7 @@ export function get_pubsub(options) {
 /**
  * Get a pubsub topic, for use in subsequent module function calls
  * @param {Object} pubsub gcloud-node pubsub object
- * @param {Object} topic_title - the name of the topic
+ * @param {string} topic_title - the name of the topic
  * @param {Object} [options] - additional gcloud-node options
  * @returns {Object} an authenticated pubsub object from gcloud-node
  */
@@ -39,7 +39,7 @@ export function get_topic(pubsub, topic_title, options) {
 /**
  * Remote call to create a google pubsub topic
  * @param {Object} pubsub gcloud-node pubsub object
- * @param {Object} topic_title - the name of the topic
+ * @param {string} topic_title - the name of the topic
  * @returns {Promise} resolving to the topic returned by gcloud-node pubsub#createTopic()
  */
 export function create_topic_P(pubsub, topic_title) {
@@ -61,7 +61,7 @@ export function create_topic_P(pubsub, topic_title) {
 /**
  * Remote call to get or create a subscription
  * @param {Object} topic gcloud-node topic object
- * @param {Object} subscription_id - the name of the subscription
+ * @param {string} subscription_id - the name of the subscription
  * @param {Object} [options] - additional gcloud-node options
  * @returns {Promise} resolving to the subscription returned by gcloud-node pubsub#createTopic()
  */
@@ -80,7 +80,7 @@ export function get_or_create_subscription_P(topic, subscription_id, options) {
 /**
  * Gets a subscription
  * @param {Object} topic gcloud-node topic object
- * @param {Object} subscription_id - the name of the subscription
+ * @param {string} subscription_id - the name of the subscription
  * @param {Object} [options] - additional gcloud-node options
  * @returns {Object} returns a subscription from gcloud-node topic#subscription()
  */
@@ -91,7 +91,7 @@ export function get_subscription(topic, subscription_id, options) {
 /**
  * Remote call to create a subscription
  * @param {Object} topic gcloud-node topic object
- * @param {Object} subscription_id - the name of the subscription
+ * @param {string} subscription_id - the name of the subscription
  * @param {Object} [options] - additional gcloud-node options
  * @returns {Promise} resolving to the subscription returned by gcloud-node topic#subscribe()
  */
@@ -111,7 +111,7 @@ export function create_subscription_P(topic, subscription_id, options) {
 /**
  * Remote call to publish a message
  * @param {Object} topic gcloud-node topic object
- * @param {Object} message - the message to pass to gcloude-node topic#publish()
+ * @param {(Object|Object[])} message - the message(s) to pass to gcloude-node topic#publish()
  * @returns {Promise} resolving to [messageIds, apiResponse] returned by gcloud-node topic#publish()
  */
 export function publish_P(topic, message) {
