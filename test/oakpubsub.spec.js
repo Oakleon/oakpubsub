@@ -26,7 +26,7 @@ let _subscription_name = "oakpubsub-spec-subscription";
 
 function get_init_options() {
     if (_use_auth_file) {
-        return { projectId: _project_id, keyFile: _auth_filename };
+        return { projectId: _project_id, keyFilename: _auth_filename };
     }
     return { projectId: _project_id };
 }
