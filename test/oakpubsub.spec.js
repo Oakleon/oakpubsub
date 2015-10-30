@@ -76,8 +76,8 @@ describe('Oakpubsub', function() {
 
         it('creates and returns a pubsub topic', function(done){
             _Oakpubsub.createTopic_P(pubsub, _topic_name)
-            .then(function(t) {
-                topic = t;
+            .then(function([t, _]) {
+                topic = t;  //Set global
                 _Assert(topic);
                 _Assert(topic.projectId === _project_id);
                 done();
@@ -100,9 +100,9 @@ describe('Oakpubsub', function() {
     describe('#Oakpubsub.getOrCreateSubscription_P()', function(){
         it('returns a pubsub subscription', function(done){
             _Oakpubsub.getOrCreateSubscription_P(topic, _subscription_name)
-            .then(function(s) {
+            .then(function([s, _]) {
 
-                subscription = s;
+                subscription = s;   //set global
                 _Assert(subscription);
                 done();
             })
@@ -141,7 +141,7 @@ describe('Oakpubsub', function() {
         it('pulls a message from pubsub', function(done){
 
             _Oakpubsub.pull_P(subscription)
-            .then(function(messages) {
+            .then(function([messages, _]) {
 
                 _Assert(messages);
 

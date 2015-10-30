@@ -51,7 +51,7 @@ Get a pubsub topic, for use in subsequent module function calls
 Remote call to create a google pubsub topic
 
 **Kind**: static method of <code>[oakpubsub](#module_oakpubsub)</code>  
-**Returns**: <code>Promise</code> - resolving to the topic returned by gcloud-node pubsub#createTopic()  
+**Returns**: <code>Promise</code> - resolving to [topic, apiResponse] returned by gcloud-node pubsub#createTopic()  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -89,7 +89,7 @@ Gets a subscription
 Remote call to create a subscription
 
 **Kind**: static method of <code>[oakpubsub](#module_oakpubsub)</code>  
-**Returns**: <code>Promise</code> - resolving to the subscription returned by gcloud-node topic#subscribe()  
+**Returns**: <code>Promise</code> - resolving to [subscription, apiResponse] returned by gcloud-node topic#subscribe()  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -148,7 +148,7 @@ Remote call to acknowledge completion of message processing
 Remote call to pull messages from server
 
 **Kind**: static method of <code>[oakpubsub](#module_oakpubsub)</code>  
-**Returns**: <code>Promise</code> - resolving to messages returned by gcloud-node subscription#pull()  
+**Returns**: <code>Promise</code> - resolving to [messages, apiResponse] returned by gcloud-node subscription#pull()  
 
 | Param | Type | Description |
 | --- | --- | --- |

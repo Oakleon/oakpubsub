@@ -40,22 +40,10 @@ export function getTopic(pubsub, topic_title, options) {
  * Remote call to create a google pubsub topic
  * @param {Object} pubsub gcloud-node pubsub object
  * @param {string} topic_title - the name of the topic
- * @returns {Promise} resolving to the topic returned by gcloud-node pubsub#createTopic()
+ * @returns {Promise} resolving to [topic, apiResponse] returned by gcloud-node pubsub#createTopic()
  */
 export function createTopic_P(pubsub, topic_title) {
-
-    let f = function(resolve, reject) {
-
-        let onComplete = function(error, topic, apiResponse) {
-
-            if (error) {
-                return reject(error);
-            }
-            resolve(topic);
-        };
-        pubsub.createTopic(topic_title, onComplete);
-    };
-    return new _Promise(f);
+    return _Promise.promisify(pubsub.createTopic, pubsub)(topic_title);
 }
 
 /**
@@ -93,19 +81,10 @@ export function getSubscription(topic, subscription_id, options) {
  * @param {Object} topic gcloud-node topic object
  * @param {string} subscription_id - the name of the subscription
  * @param {Object} [options] - additional gcloud-node options
- * @returns {Promise} resolving to the subscription returned by gcloud-node topic#subscribe()
+ * @returns {Promise} resolving to [subscription, apiResponse] returned by gcloud-node topic#subscribe()
  */
 export function createSubscription_P(topic, subscription_id, options) {
-
-    let f = function(resolve, reject) {
-        topic.subscribe(subscription_id, options, function(err, subscription) {
-            if (err) {
-                return reject(err);
-            }
-            resolve (subscription);
-        });
-    };
-    return new _Promise(f);
+    return _Promise.promisify(topic.subscribe, topic)(subscription_id, options);
 }
 
 /**
@@ -115,19 +94,7 @@ export function createSubscription_P(topic, subscription_id, options) {
  * @returns {Promise} resolving to [messageIds, apiResponse] returned by gcloud-node topic#publish()
  */
 export function publish_P(topic, message) {
-
-    let f = function(resolve, reject) {
-
-        let onComplete = function(error, messageIds, apiResponse) {
-
-            if (error) {
-                return reject(error);
-            }
-            resolve([messageIds, apiResponse]);
-        };
-        topic.publish(message, onComplete);
-    };
-    return new _Promise(f);
+    return _Promise.promisify(topic.publish, topic)(message);
 }
 
 /**
@@ -136,21 +103,7 @@ export function publish_P(topic, message) {
  * @returns {Promise} resolving to apiResponse returned by gcloud-node topic#delete()
  */
 export function deleteTopic_P(topic) {
-
-    let f = function(resolve, reject) {
-
-        let onComplete = function(error, apiResponse) {
-
-            if (error) {
-                return reject(error);
-            }
-
-            resolve(apiResponse);
-        };
-
-        topic.delete(onComplete);
-    };
-    return new _Promise(f);
+    return _Promise.promisify(topic.delete, topic)();
 }
 
 /**
@@ -159,21 +112,7 @@ export function deleteTopic_P(topic) {
  * @returns {Promise} resolving to apiResponse returned by gcloud-node subscription#delete()
  */
 export function deleteSubscription_P(subscription) {
-
-    let f = function(resolve, reject) {
-
-        let onComplete = function(error, apiResponse) {
-
-            if (error) {
-                return reject(error);
-            }
-
-            resolve(apiResponse);
-        };
-
-        subscription.delete(onComplete);
-    };
-    return new _Promise(f);
+    return _Promise.promisify(subscription.delete, subscription)();
 }
 
 /**
@@ -184,45 +123,19 @@ export function deleteSubscription_P(subscription) {
  */
 export function ack_P(subscription, ackIds) {
 
-    let f = function(resolve, reject) {
-
-        let onComplete = function(error, apiResponse) {
-
-            if (error) {
-                return reject(error);
-            }
-            resolve(apiResponse);
-        };
-
-        if (Array.isArray(ackIds) && !ackIds.length) {
-            return resolve();
-        }
-
-        return subscription.ack(ackIds, onComplete);
-    };
-    return new _Promise(f);
+    if (Array.isArray(ackIds) && !ackIds.length) {
+        return _Promise.resolve();
+    }
+    return _Promise.promisify(subscription.ack, subscription)(ackIds);
 }
 
 /**
  * Remote call to pull messages from server
  * @param {Object} subscription gcloud-node subscription object
  * @param {Object} [options] - additional gcloud-node options for subscription#pull()
- * @returns {Promise} resolving to messages returned by gcloud-node subscription#pull()
+ * @returns {Promise} resolving to [messages, apiResponse] returned by gcloud-node subscription#pull()
  */
 export function pull_P(subscription, options) {
-
     options = options || {};
-
-    let f = function(resolve, reject) {
-
-        let onComplete = function(err, messages, apiResponse) {
-
-            if (err) {
-                return reject(err);
-            }
-            return resolve(messages);
-        };
-        subscription.pull(options, onComplete);
-    };
-    return new _Promise(f);
+    return _Promise.promisify(subscription.pull, subscription)(options);
 }
