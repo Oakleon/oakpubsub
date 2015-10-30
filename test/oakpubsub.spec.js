@@ -49,33 +49,33 @@ describe('Oakpubsub', function() {
     //Cleanup after any previously failed tests
     before(async () => {
 
-        pubsub = _Oakpubsub.get_pubsub(get_init_options());
+        pubsub = _Oakpubsub.getPubsub(get_init_options());
         _Assert(pubsub);
 
-        let del_topic        = _Oakpubsub.get_topic(pubsub, _topic_name);
-        let del_subscription = _Oakpubsub.get_subscription(del_topic, _subscription_name);
+        let del_topic        = _Oakpubsub.getTopic(pubsub, _topic_name);
+        let del_subscription = _Oakpubsub.getSubscription(del_topic, _subscription_name);
 
-        await _Oakpubsub.delete_subscription_P(del_subscription)
+        await _Oakpubsub.deleteSubscription_P(del_subscription)
         .catch((err) => {
             //ignore if this subscription does not exist
         });
 
-        await _Oakpubsub.delete_topic_P(del_topic)
+        await _Oakpubsub.deleteTopic_P(del_topic)
         .catch((err) => {
             //ignore if this topic does not exist
         });
     });
 
     after(async () => {
-        await _Oakpubsub.delete_subscription_P(subscription);
-        await _Oakpubsub.delete_topic_P(topic);
+        await _Oakpubsub.deleteSubscription_P(subscription);
+        await _Oakpubsub.deleteTopic_P(topic);
     });
 
 
-    describe('#Oakpubsub.create_topic_P()', function(){
+    describe('#Oakpubsub.createTopic_P()', function(){
 
         it('creates and returns a pubsub topic', function(done){
-            _Oakpubsub.create_topic_P(pubsub, _topic_name)
+            _Oakpubsub.createTopic_P(pubsub, _topic_name)
             .then(function(t) {
                 topic = t;
                 _Assert(topic);
@@ -89,17 +89,17 @@ describe('Oakpubsub', function() {
     });
 
 
-    describe('#Oakpubsub.get_topic()', function(){
+    describe('#Oakpubsub.getTopic()', function(){
         it('returns a pubsub topic', function(){
-            let t2 = _Oakpubsub.get_topic(pubsub, _topic_name);
+            let t2 = _Oakpubsub.getTopic(pubsub, _topic_name);
             _Assert(t2);
             _Assert(t2.projectId === _project_id);
         });
     });
 
-    describe('#Oakpubsub.get_or_create_subscription_P()', function(){
+    describe('#Oakpubsub.getOrCreateSubscription_P()', function(){
         it('returns a pubsub subscription', function(done){
-            _Oakpubsub.get_or_create_subscription_P(topic, _subscription_name)
+            _Oakpubsub.getOrCreateSubscription_P(topic, _subscription_name)
             .then(function(s) {
 
                 subscription = s;

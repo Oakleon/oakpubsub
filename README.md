@@ -10,20 +10,20 @@ oakpubsub module.
 
 
 * [oakpubsub](#module_oakpubsub)
-  * [.get_pubsub(options)](#module_oakpubsub.get_pubsub) ⇒ <code>Object</code>
-  * [.get_topic(pubsub, topic_title, [options])](#module_oakpubsub.get_topic) ⇒ <code>Object</code>
-  * [.create_topic_P(pubsub, topic_title)](#module_oakpubsub.create_topic_P) ⇒ <code>Promise</code>
-  * [.get_or_create_subscription_P(topic, subscription_id, [options])](#module_oakpubsub.get_or_create_subscription_P) ⇒ <code>Promise</code>
-  * [.get_subscription(topic, subscription_id, [options])](#module_oakpubsub.get_subscription) ⇒ <code>Object</code>
-  * [.create_subscription_P(topic, subscription_id, [options])](#module_oakpubsub.create_subscription_P) ⇒ <code>Promise</code>
+  * [.getPubsub(options)](#module_oakpubsub.getPubsub) ⇒ <code>Object</code>
+  * [.getTopic(pubsub, topic_title, [options])](#module_oakpubsub.getTopic) ⇒ <code>Object</code>
+  * [.createTopic_P(pubsub, topic_title)](#module_oakpubsub.createTopic_P) ⇒ <code>Promise</code>
+  * [.getOrCreateSubscription_P(topic, subscription_id, [options])](#module_oakpubsub.getOrCreateSubscription_P) ⇒ <code>Promise</code>
+  * [.getSubscription(topic, subscription_id, [options])](#module_oakpubsub.getSubscription) ⇒ <code>Object</code>
+  * [.createSubscription_P(topic, subscription_id, [options])](#module_oakpubsub.createSubscription_P) ⇒ <code>Promise</code>
   * [.publish_P(topic, message)](#module_oakpubsub.publish_P) ⇒ <code>Promise</code>
-  * [.delete_topic_P(topic)](#module_oakpubsub.delete_topic_P) ⇒ <code>Promise</code>
-  * [.delete_subscription_P(subscription)](#module_oakpubsub.delete_subscription_P) ⇒ <code>Promise</code>
+  * [.deleteTopic_P(topic)](#module_oakpubsub.deleteTopic_P) ⇒ <code>Promise</code>
+  * [.deleteSubscription_P(subscription)](#module_oakpubsub.deleteSubscription_P) ⇒ <code>Promise</code>
   * [.ack_P(subscription, acknowledge)](#module_oakpubsub.ack_P) ⇒ <code>Promise</code>
   * [.pull_P(subscription, [options])](#module_oakpubsub.pull_P) ⇒ <code>Promise</code>
 
-<a name="module_oakpubsub.get_pubsub"></a>
-### oakpubsub.get_pubsub(options) ⇒ <code>Object</code>
+<a name="module_oakpubsub.getPubsub"></a>
+### oakpubsub.getPubsub(options) ⇒ <code>Object</code>
 Get a pubsub object, for use in subsequent module function calls
 
 **Kind**: static method of <code>[oakpubsub](#module_oakpubsub)</code>  
@@ -33,8 +33,8 @@ Get a pubsub object, for use in subsequent module function calls
 | --- | --- | --- |
 | options | <code>Object</code> | passed directly to gcloud-node for i.e. authentication |
 
-<a name="module_oakpubsub.get_topic"></a>
-### oakpubsub.get_topic(pubsub, topic_title, [options]) ⇒ <code>Object</code>
+<a name="module_oakpubsub.getTopic"></a>
+### oakpubsub.getTopic(pubsub, topic_title, [options]) ⇒ <code>Object</code>
 Get a pubsub topic, for use in subsequent module function calls
 
 **Kind**: static method of <code>[oakpubsub](#module_oakpubsub)</code>  
@@ -46,8 +46,8 @@ Get a pubsub topic, for use in subsequent module function calls
 | topic_title | <code>string</code> | the name of the topic |
 | [options] | <code>Object</code> | additional gcloud-node options |
 
-<a name="module_oakpubsub.create_topic_P"></a>
-### oakpubsub.create_topic_P(pubsub, topic_title) ⇒ <code>Promise</code>
+<a name="module_oakpubsub.createTopic_P"></a>
+### oakpubsub.createTopic_P(pubsub, topic_title) ⇒ <code>Promise</code>
 Remote call to create a google pubsub topic
 
 **Kind**: static method of <code>[oakpubsub](#module_oakpubsub)</code>  
@@ -58,8 +58,8 @@ Remote call to create a google pubsub topic
 | pubsub | <code>Object</code> | gcloud-node pubsub object |
 | topic_title | <code>string</code> | the name of the topic |
 
-<a name="module_oakpubsub.get_or_create_subscription_P"></a>
-### oakpubsub.get_or_create_subscription_P(topic, subscription_id, [options]) ⇒ <code>Promise</code>
+<a name="module_oakpubsub.getOrCreateSubscription_P"></a>
+### oakpubsub.getOrCreateSubscription_P(topic, subscription_id, [options]) ⇒ <code>Promise</code>
 Remote call to get or create a subscription
 
 **Kind**: static method of <code>[oakpubsub](#module_oakpubsub)</code>  
@@ -71,8 +71,8 @@ Remote call to get or create a subscription
 | subscription_id | <code>string</code> | the name of the subscription |
 | [options] | <code>Object</code> | additional gcloud-node options |
 
-<a name="module_oakpubsub.get_subscription"></a>
-### oakpubsub.get_subscription(topic, subscription_id, [options]) ⇒ <code>Object</code>
+<a name="module_oakpubsub.getSubscription"></a>
+### oakpubsub.getSubscription(topic, subscription_id, [options]) ⇒ <code>Object</code>
 Gets a subscription
 
 **Kind**: static method of <code>[oakpubsub](#module_oakpubsub)</code>  
@@ -84,8 +84,8 @@ Gets a subscription
 | subscription_id | <code>string</code> | the name of the subscription |
 | [options] | <code>Object</code> | additional gcloud-node options |
 
-<a name="module_oakpubsub.create_subscription_P"></a>
-### oakpubsub.create_subscription_P(topic, subscription_id, [options]) ⇒ <code>Promise</code>
+<a name="module_oakpubsub.createSubscription_P"></a>
+### oakpubsub.createSubscription_P(topic, subscription_id, [options]) ⇒ <code>Promise</code>
 Remote call to create a subscription
 
 **Kind**: static method of <code>[oakpubsub](#module_oakpubsub)</code>  
@@ -109,8 +109,8 @@ Remote call to publish a message
 | topic | <code>Object</code> | gcloud-node topic object |
 | message | <code>Object</code> &#124; <code>Array.&lt;Object&gt;</code> | the message(s) to pass to gcloude-node topic#publish() |
 
-<a name="module_oakpubsub.delete_topic_P"></a>
-### oakpubsub.delete_topic_P(topic) ⇒ <code>Promise</code>
+<a name="module_oakpubsub.deleteTopic_P"></a>
+### oakpubsub.deleteTopic_P(topic) ⇒ <code>Promise</code>
 Remote call to delete a topic
 
 **Kind**: static method of <code>[oakpubsub](#module_oakpubsub)</code>  
@@ -120,8 +120,8 @@ Remote call to delete a topic
 | --- | --- | --- |
 | topic | <code>Object</code> | gcloud-node topic object |
 
-<a name="module_oakpubsub.delete_subscription_P"></a>
-### oakpubsub.delete_subscription_P(subscription) ⇒ <code>Promise</code>
+<a name="module_oakpubsub.deleteSubscription_P"></a>
+### oakpubsub.deleteSubscription_P(subscription) ⇒ <code>Promise</code>
 Remote call to delete a subscription
 
 **Kind**: static method of <code>[oakpubsub](#module_oakpubsub)</code>  

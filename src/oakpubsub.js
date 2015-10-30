@@ -14,7 +14,7 @@ import _Promise from 'bluebird';
   * @param {Object} options passed directly to gcloud-node for i.e. authentication
   * @returns {Object} an authenticated pubsub object from gcloud-node
   */
-export function get_pubsub(options) {
+export function getPubsub(options) {
 
     //options.keyFilename is required if you lack the GCE scope
 
@@ -32,7 +32,7 @@ export function get_pubsub(options) {
  * @param {Object} [options] - additional gcloud-node options
  * @returns {Object} an authenticated pubsub object from gcloud-node
  */
-export function get_topic(pubsub, topic_title, options) {
+export function getTopic(pubsub, topic_title, options) {
     return pubsub.topic(topic_title, options);
 }
 
@@ -42,7 +42,7 @@ export function get_topic(pubsub, topic_title, options) {
  * @param {string} topic_title - the name of the topic
  * @returns {Promise} resolving to the topic returned by gcloud-node pubsub#createTopic()
  */
-export function create_topic_P(pubsub, topic_title) {
+export function createTopic_P(pubsub, topic_title) {
 
     let f = function(resolve, reject) {
 
@@ -65,15 +65,15 @@ export function create_topic_P(pubsub, topic_title) {
  * @param {Object} [options] - additional gcloud-node options
  * @returns {Promise} resolving to the subscription returned by gcloud-node pubsub#createTopic()
  */
-export function get_or_create_subscription_P(topic, subscription_id, options) {
+export function getOrCreateSubscription_P(topic, subscription_id, options) {
 
-    return create_subscription_P(topic, subscription_id, options)
+    return createSubscription_P(topic, subscription_id, options)
     .catch(function(error) {
 
         if (!error.code || error.code !== 409) {   //409: Resource already exists in the project
             throw error;
         }
-        return get_subscription(topic, subscription_id, options);
+        return getSubscription(topic, subscription_id, options);
     });
 }
 
@@ -84,7 +84,7 @@ export function get_or_create_subscription_P(topic, subscription_id, options) {
  * @param {Object} [options] - additional gcloud-node options
  * @returns {Object} returns a subscription from gcloud-node topic#subscription()
  */
-export function get_subscription(topic, subscription_id, options) {
+export function getSubscription(topic, subscription_id, options) {
     return topic.subscription(subscription_id, options);
 }
 
@@ -95,7 +95,7 @@ export function get_subscription(topic, subscription_id, options) {
  * @param {Object} [options] - additional gcloud-node options
  * @returns {Promise} resolving to the subscription returned by gcloud-node topic#subscribe()
  */
-export function create_subscription_P(topic, subscription_id, options) {
+export function createSubscription_P(topic, subscription_id, options) {
 
     let f = function(resolve, reject) {
         topic.subscribe(subscription_id, options, function(err, subscription) {
@@ -135,7 +135,7 @@ export function publish_P(topic, message) {
  * @param {Object} topic gcloud-node topic object
  * @returns {Promise} resolving to apiResponse returned by gcloud-node topic#delete()
  */
-export function delete_topic_P(topic) {
+export function deleteTopic_P(topic) {
 
     let f = function(resolve, reject) {
 
@@ -158,7 +158,7 @@ export function delete_topic_P(topic) {
  * @param {Object} subscription gcloud-node subscription object
  * @returns {Promise} resolving to apiResponse returned by gcloud-node subscription#delete()
  */
-export function delete_subscription_P(subscription) {
+export function deleteSubscription_P(subscription) {
 
     let f = function(resolve, reject) {
 
