@@ -3,11 +3,13 @@
 import _Gcloud from 'gcloud';
 import _Promise from 'bluebird';
 
+//workaround for errors not propagating from async await
+process.on('unhandledRejection', err => { throw err; });
+
 /**
  * oakpubsub module.
  * @module oakpubsub
  */
-
 
  /**
   * Get a pubsub object, for use in subsequent module function calls
@@ -34,6 +36,38 @@ export function getPubsub(options) {
  */
 export function getTopic(pubsub, topic_title, options) {
     return pubsub.topic(topic_title, options);
+}
+
+/**
+ * Helper to get multiple pubsub topics and process them asynchronously
+ * @param {Object} pubsub gcloud-node pubsub object
+ * @param {(Promise|function)} worker_P - a worker function or promise that handles the response topics
+ * @param {Object} [query_options] - additional gcloud-node pubsub query options
+ * @returns {Promise} resolving to the final apiResponse
+ */
+export function processTopics_P(pubsub, worker_P, query_options = {}) {
+
+    query_options.autoPaginate = false;
+
+    let fun = function(resolve, reject) {
+
+        async function onComplete(error, topics, nextQuery, apiResponse) {
+
+            if (error) {
+                return reject(error);
+            }
+
+            await worker_P(topics);
+
+            if (!nextQuery) {
+                return resolve(apiResponse);
+            }
+            pubsub.getTopics(nextQuery, onComplete);
+        };
+        pubsub.getTopics(query_options, onComplete);
+    };
+
+    return new _Promise(fun);
 }
 
 /**

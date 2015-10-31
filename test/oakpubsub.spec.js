@@ -1,12 +1,11 @@
 import _Fs from 'fs';
 import _Assert from 'assert';
 
-import _Lo from 'lodash';
+import _Promise from 'bluebird';
+import _R from 'ramda';
 
 import * as _Oakpubsub from '../src/oakpubsub';
 
-//workaround for errors not propagating from async await
-process.on('unhandledRejection', err => { throw err; });
 
 function read_project_id_from_file(filename) {
 
@@ -21,7 +20,12 @@ let _auth_filename = process.env.GCLOUD_AUTH_FILE || __dirname + '/auth-secret.j
 let _use_auth_file = _Fs.existsSync(_auth_filename);
 let _project_id    = process.env.GCLOUD_PROJECT_ID || read_project_id_from_file(__dirname + '/auth-project.json');
 
-let _topic_name        = "oakpubsub-spec-topic";
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+}
+
+let _topic_prefix      = `oakpubsub-spec-topic`;
+let _topic_name        = `${_topic_prefix}_${getRandomInt(1,99999)}`;
 let _subscription_name = "oakpubsub-spec-subscription";
 
 function get_init_options() {
@@ -29,6 +33,26 @@ function get_init_options() {
         return { projectId: _project_id, keyFilename: _auth_filename };
     }
     return { projectId: _project_id };
+}
+
+function deleteTestTopics_P(pubsub) {
+    let regex = new RegExp(`^${_topic_prefix}`);
+
+    let isTestTopic = (t_test) => {
+        let t_title = t_test.name.split('/').pop();
+        return t_title.match(regex);
+    };
+
+    let delete_P = function delete_P(alltopics) {
+
+        let test_topics = _R.filter(isTestTopic, alltopics);
+        return _Promise.resolve(test_topics)
+            .map((tt) => {
+                return _Oakpubsub.deleteTopic_P(tt);
+            }, {concurrency: 5});
+    };
+
+    return _Oakpubsub.processTopics_P(pubsub, delete_P, {pageSize: 10});
 }
 
 
@@ -43,7 +67,7 @@ describe('Oakpubsub', function() {
 
     //bug in gcloud library - test_message gets mutated
     let original_test_message = { data : ['this', 'is', 'a', 'test' ], attributes: { att_key: "att_value" }};
-    let test_message          = _Lo.clone(original_test_message);
+    let test_message          = _R.clone(original_test_message);
     let test_message_id;
 
     //Cleanup after any previously failed tests
@@ -51,6 +75,8 @@ describe('Oakpubsub', function() {
 
         pubsub = _Oakpubsub.getPubsub(get_init_options());
         _Assert(pubsub);
+
+        await deleteTestTopics_P(pubsub);
 
         let del_topic        = _Oakpubsub.getTopic(pubsub, _topic_name);
         let del_subscription = _Oakpubsub.getSubscription(del_topic, _subscription_name);
@@ -60,15 +86,14 @@ describe('Oakpubsub', function() {
             //ignore if this subscription does not exist
         });
 
-        await _Oakpubsub.deleteTopic_P(del_topic)
-        .catch((err) => {
-            //ignore if this topic does not exist
-        });
     });
 
+    //Delete test subscription and topics
+    //Is there a better way to safely delete test topics?
+    //Would be nice if pubsub supported namespaces
     after(async () => {
         await _Oakpubsub.deleteSubscription_P(subscription);
-        await _Oakpubsub.deleteTopic_P(topic);
+        await deleteTestTopics_P(pubsub);
     });
 
 
@@ -88,12 +113,46 @@ describe('Oakpubsub', function() {
         });
     });
 
-
     describe('#Oakpubsub.getTopic()', function(){
         it('returns a pubsub topic', function(){
             let t2 = _Oakpubsub.getTopic(pubsub, _topic_name);
             _Assert(t2);
             _Assert(t2.projectId === _project_id);
+        });
+    });
+
+    describe('#Oakpubsub.processTopics_P()', function(){
+
+        it('returns multiple pubsub topics', async function(){
+
+            let num_topics  = 10;
+            let topic_names = [];
+
+            _R.range(0, num_topics).map((i) => {
+                topic_names.push(`${_topic_name}_${i}`);
+            });
+
+            await _Promise.resolve(topic_names)
+            .map((topic_name) => {
+                return _Oakpubsub.createTopic_P(pubsub, topic_name);
+            }, {concurrency: 5});
+
+            let regex = new RegExp(`^${_topic_name}`);
+
+            let isTestTopic = (atopic) => {
+                let t_title = atopic.name.split('/').pop();
+                return t_title.match(regex);
+            };
+
+            let all_test_tops = [];
+
+            function worker_P(topics) {
+                let tts       = _R.filter(isTestTopic, topics);
+                all_test_tops = all_test_tops.concat(tts);
+            };
+
+            await _Oakpubsub.processTopics_P(pubsub, worker_P, {pageSize: 4});
+            _Assert(all_test_tops.length >= num_topics);
         });
     });
 
@@ -151,8 +210,8 @@ describe('Oakpubsub', function() {
                 _Assert(ack_id);
                 _Assert(m.id === test_message_id);
 
-                _Assert(_Lo.isEqual(m.data, original_test_message.data));
-                _Assert(_Lo.isEqual(m.attributes, original_test_message.attributes));
+                _Assert(_R.equals(m.data, original_test_message.data));
+                _Assert(_R.equals(m.attributes, original_test_message.attributes));
 
                 done();
             })
