@@ -65,7 +65,7 @@ Helper to get multiple pubsub topics and process them asynchronously
 Remote call to create a google pubsub topic
 
 **Kind**: inner method of <code>[oakpubsub](#module_oakpubsub)</code>  
-**Returns**: <code>Promise</code> - resolving to [topic, apiResponse] returned by gcloud-node pubsub#createTopic()  
+**Returns**: <code>Promise</code> - resolving to topic returned by gcloud-node pubsub#createTopic()  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -103,7 +103,7 @@ Gets a subscription
 Remote call to create a subscription
 
 **Kind**: inner method of <code>[oakpubsub](#module_oakpubsub)</code>  
-**Returns**: <code>Promise</code> - resolving to [subscription, apiResponse] returned by gcloud-node topic#subscribe()  
+**Returns**: <code>Promise</code> - resolving to subscription returned by gcloud-node topic#subscribe()  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -116,7 +116,7 @@ Remote call to create a subscription
 Remote call to publish a message
 
 **Kind**: inner method of <code>[oakpubsub](#module_oakpubsub)</code>  
-**Returns**: <code>Promise</code> - resolving to [messageIds, apiResponse] returned by gcloud-node topic#publish()  
+**Returns**: <code>Promise</code> - resolving to array of message ids returned by gcloud-node topic#publish()  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -162,7 +162,7 @@ Remote call to acknowledge completion of message processing
 Remote call to pull messages from server
 
 **Kind**: inner method of <code>[oakpubsub](#module_oakpubsub)</code>  
-**Returns**: <code>Promise</code> - resolving to [messages, apiResponse] returned by gcloud-node subscription#pull()  
+**Returns**: <code>Promise</code> - resolving to array of messages returned by gcloud-node subscription#pull()  
 
 | Param | Type | Description |
 | --- | --- | --- |

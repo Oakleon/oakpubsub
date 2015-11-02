@@ -74,10 +74,10 @@ export function processTopics_P(pubsub, worker_P, query_options = {}) {
  * Remote call to create a google pubsub topic
  * @param {Object} pubsub gcloud-node pubsub object
  * @param {string} topic_title - the name of the topic
- * @returns {Promise} resolving to [topic, apiResponse] returned by gcloud-node pubsub#createTopic()
+ * @returns {Promise} resolving to topic returned by gcloud-node pubsub#createTopic()
  */
 export function createTopic_P(pubsub, topic_title) {
-    return _Promise.promisify(pubsub.createTopic, pubsub)(topic_title);
+    return _Promise.promisify(pubsub.createTopic, {context: pubsub})(topic_title);
 }
 
 /**
@@ -115,20 +115,20 @@ export function getSubscription(topic, subscription_id, options) {
  * @param {Object} topic gcloud-node topic object
  * @param {string} subscription_id - the name of the subscription
  * @param {Object} [options] - additional gcloud-node options
- * @returns {Promise} resolving to [subscription, apiResponse] returned by gcloud-node topic#subscribe()
+ * @returns {Promise} resolving to subscription returned by gcloud-node topic#subscribe()
  */
 export function createSubscription_P(topic, subscription_id, options) {
-    return _Promise.promisify(topic.subscribe, topic)(subscription_id, options);
+    return _Promise.promisify(topic.subscribe, {context: topic})(subscription_id, options);
 }
 
 /**
  * Remote call to publish a message
  * @param {Object} topic gcloud-node topic object
  * @param {(Object|Object[])} message - the message(s) to pass to gcloude-node topic#publish()
- * @returns {Promise} resolving to [messageIds, apiResponse] returned by gcloud-node topic#publish()
+ * @returns {Promise} resolving to array of message ids returned by gcloud-node topic#publish()
  */
 export function publish_P(topic, message) {
-    return _Promise.promisify(topic.publish, topic)(message);
+    return _Promise.promisify(topic.publish, {context: topic})(message);
 }
 
 /**
@@ -137,7 +137,7 @@ export function publish_P(topic, message) {
  * @returns {Promise} resolving to apiResponse returned by gcloud-node topic#delete()
  */
 export function deleteTopic_P(topic) {
-    return _Promise.promisify(topic.delete, topic)();
+    return _Promise.promisify(topic.delete, {context: topic})();
 }
 
 /**
@@ -146,7 +146,7 @@ export function deleteTopic_P(topic) {
  * @returns {Promise} resolving to apiResponse returned by gcloud-node subscription#delete()
  */
 export function deleteSubscription_P(subscription) {
-    return _Promise.promisify(subscription.delete, subscription)();
+    return _Promise.promisify(subscription.delete, {context: subscription})();
 }
 
 /**
@@ -160,16 +160,16 @@ export function ack_P(subscription, ackIds) {
     if (Array.isArray(ackIds) && !ackIds.length) {
         return _Promise.resolve();
     }
-    return _Promise.promisify(subscription.ack, subscription)(ackIds);
+    return _Promise.promisify(subscription.ack, {context: subscription})(ackIds);
 }
 
 /**
  * Remote call to pull messages from server
  * @param {Object} subscription gcloud-node subscription object
  * @param {Object} [options] - additional gcloud-node options for subscription#pull()
- * @returns {Promise} resolving to [messages, apiResponse] returned by gcloud-node subscription#pull()
+ * @returns {Promise} resolving to array of messages returned by gcloud-node subscription#pull()
  */
 export function pull_P(subscription, options) {
     options = options || {};
-    return _Promise.promisify(subscription.pull, subscription)(options);
+    return _Promise.promisify(subscription.pull, {context: subscription})(options);
 }

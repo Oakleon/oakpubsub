@@ -101,7 +101,7 @@ describe('Oakpubsub', function() {
 
         it('creates and returns a pubsub topic', function(done){
             _Oakpubsub.createTopic_P(pubsub, _topic_name)
-            .then(function([t, _]) {
+            .then(function(t) {
                 topic = t;  //Set global
                 _Assert(topic);
                 _Assert(topic.projectId === _project_id);
@@ -159,7 +159,7 @@ describe('Oakpubsub', function() {
     describe('#Oakpubsub.getOrCreateSubscription_P()', function(){
         it('returns a pubsub subscription', function(done){
             _Oakpubsub.getOrCreateSubscription_P(topic, _subscription_name)
-            .then(function([s, _]) {
+            .then(function(s) {
 
                 subscription = s;   //set global
                 _Assert(subscription);
@@ -177,9 +177,8 @@ describe('Oakpubsub', function() {
             let message_ids;
 
             _Oakpubsub.publish_P(topic, test_message)
-            .then(function(response) {
-                _Assert(response);
-                message_ids = response[0];
+            .then(function(message_ids) {
+                _Assert(message_ids);
 
                 _Assert(Array.isArray(message_ids));
                 _Assert(message_ids.length > 0);
@@ -200,7 +199,7 @@ describe('Oakpubsub', function() {
         it('pulls a message from pubsub', function(done){
 
             _Oakpubsub.pull_P(subscription)
-            .then(function([messages, _]) {
+            .then(function(messages) {
 
                 _Assert(messages);
 
