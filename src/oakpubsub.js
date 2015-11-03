@@ -124,11 +124,11 @@ export function createSubscription_P(topic, subscription_id, options) {
 /**
  * Remote call to publish a message
  * @param {Object} topic gcloud-node topic object
- * @param {(Object|Object[])} message - the message(s) to pass to gcloude-node topic#publish()
+ * @param {(Object|Object[])} messages - the message(s) to pass to gcloude-node topic#publish()
  * @returns {Promise} resolving to array of message ids returned by gcloud-node topic#publish()
  */
-export function publish_P(topic, message) {
-    return _Promise.promisify(topic.publish, {context: topic})(message);
+export function publish_P(topic, messages) {
+    return _Promise.promisify(topic.publish, {context: topic})(messages);
 }
 
 /**
@@ -172,4 +172,14 @@ export function ack_P(subscription, ackIds) {
 export function pull_P(subscription, options) {
     options = options || {};
     return _Promise.promisify(subscription.pull, {context: subscription})(options);
+}
+
+/**
+ * Utility to create a message object
+ * @param {{string|number|array|Object}} data to publish (gcloud-node will JSON encode/decode for you)
+ * @param {Object} [attributes] - additional key-value attributes attached to the message
+ * @returns {Object} message object that can be used in publish_P()
+ */
+export function makeMessage(data, attributes = undefined) {
+    return {data, attributes};
 }

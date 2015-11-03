@@ -66,9 +66,9 @@ describe('Oakpubsub', function() {
     let subscription;
 
     //bug in gcloud library - test_message gets mutated
-    let original_test_message = { data : ['this', 'is', 'a', 'test' ], attributes: { att_key: "att_value" }};
-    let test_message          = _R.clone(original_test_message);
-    let test_message_id;
+    let original_test_message1 = _Oakpubsub.makeMessage(['this', 'is', 'a', 'test' ], { att_key: "att_value" });
+    let test_message1          = _R.clone(original_test_message1);
+    let test_message1_id;
 
     //Cleanup after any previously failed tests
     before(async () => {
@@ -171,19 +171,21 @@ describe('Oakpubsub', function() {
         });
     });
 
-    describe('#Oakpubsub.publish_P()', function(){
+    describe('#Oakpubsub.publish_P(), #Oakpubsub.pull_P() and ack_P()', function(){
+        let ack_id;
+
         it('publish a message to pubsub', function(done){
 
             let message_ids;
 
-            _Oakpubsub.publish_P(topic, test_message)
+            _Oakpubsub.publish_P(topic, test_message1)
             .then(function(message_ids) {
                 _Assert(message_ids);
 
                 _Assert(Array.isArray(message_ids));
                 _Assert(message_ids.length > 0);
 
-                test_message_id = message_ids[0];
+                test_message1_id = message_ids[0];
 
                 done();
             })
@@ -191,10 +193,6 @@ describe('Oakpubsub', function() {
                 done(e);
             });
         });
-    });
-
-    describe('#Oakpubsub.pull_P() and ack_P()', function(){
-        let ack_id;
 
         it('pulls a message from pubsub', function(done){
 
@@ -207,10 +205,10 @@ describe('Oakpubsub', function() {
                 ack_id = m.ackId;
 
                 _Assert(ack_id);
-                _Assert(m.id === test_message_id);
+                _Assert(m.id === test_message1_id);
 
-                _Assert(_R.equals(m.data, original_test_message.data));
-                _Assert(_R.equals(m.attributes, original_test_message.attributes));
+                _Assert(_R.equals(m.data, original_test_message1.data));
+                _Assert(_R.equals(m.attributes, original_test_message1.attributes));
 
                 done();
             })
@@ -229,6 +227,46 @@ describe('Oakpubsub', function() {
             .catch(function(e) {
                 done(e);
             });
+        });
+    });
+
+    describe('tests workflow with more message types', function(){
+
+        it('message data=object, no attributes', async function(){
+
+            let original_test_message2 = _Oakpubsub.makeMessage({o: 'message has object with no attributes'});
+            let test_message2          = _R.clone(original_test_message2);
+
+            await _Oakpubsub.publish_P(topic, test_message2);
+            let messages = await _Oakpubsub.pull_P(subscription);
+            let message  = messages.pop();
+
+            _Assert(_R.equals(message.data, original_test_message2.data));
+            _Assert(_R.equals(message.attributes, original_test_message2.attributes));
+
+            await _Oakpubsub.ack_P(subscription, message.ackId);
+        });
+
+        it('array of messages: int and string', async function(){
+
+            let d1 =100;
+            let d2 = "string";
+
+            let message1 = _Oakpubsub.makeMessage(d1);
+            let message2 = _Oakpubsub.makeMessage(d2);
+
+            await _Oakpubsub.publish_P(topic, [message1, message2]);
+            let messages = await _Oakpubsub.pull_P(subscription);
+
+            let m_ids    = messages.map(
+                (m) => {    //both test the pulled data and get the ackIds
+                    _Assert(m.data === d1 || m.data === d2);
+                    return m.ackId;
+                }
+            );
+            _Assert.deepStrictEqual(messages.length, 2);
+
+            await _Oakpubsub.ack_P(subscription, m_ids);
         });
     });
 });
