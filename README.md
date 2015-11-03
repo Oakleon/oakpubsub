@@ -17,11 +17,12 @@ oakpubsub module.
   * [~getOrCreateSubscription_P(topic, subscription_id, [options])](#module_oakpubsub..getOrCreateSubscription_P) ⇒ <code>Promise</code>
   * [~getSubscription(topic, subscription_id, [options])](#module_oakpubsub..getSubscription) ⇒ <code>Object</code>
   * [~createSubscription_P(topic, subscription_id, [options])](#module_oakpubsub..createSubscription_P) ⇒ <code>Promise</code>
-  * [~publish_P(topic, message)](#module_oakpubsub..publish_P) ⇒ <code>Promise</code>
+  * [~publish_P(topic, messages)](#module_oakpubsub..publish_P) ⇒ <code>Promise</code>
   * [~deleteTopic_P(topic)](#module_oakpubsub..deleteTopic_P) ⇒ <code>Promise</code>
   * [~deleteSubscription_P(subscription)](#module_oakpubsub..deleteSubscription_P) ⇒ <code>Promise</code>
   * [~ack_P(subscription, acknowledge)](#module_oakpubsub..ack_P) ⇒ <code>Promise</code>
   * [~pull_P(subscription, [options])](#module_oakpubsub..pull_P) ⇒ <code>Promise</code>
+  * [~makeMessage(data, [attributes])](#module_oakpubsub..makeMessage) ⇒ <code>Object</code>
 
 <a name="module_oakpubsub..getPubsub"></a>
 ### oakpubsub~getPubsub(options) ⇒ <code>Object</code>
@@ -112,7 +113,7 @@ Remote call to create a subscription
 | [options] | <code>Object</code> | additional gcloud-node options |
 
 <a name="module_oakpubsub..publish_P"></a>
-### oakpubsub~publish_P(topic, message) ⇒ <code>Promise</code>
+### oakpubsub~publish_P(topic, messages) ⇒ <code>Promise</code>
 Remote call to publish a message
 
 **Kind**: inner method of <code>[oakpubsub](#module_oakpubsub)</code>  
@@ -121,7 +122,7 @@ Remote call to publish a message
 | Param | Type | Description |
 | --- | --- | --- |
 | topic | <code>Object</code> | gcloud-node topic object |
-| message | <code>Object</code> &#124; <code>Array.&lt;Object&gt;</code> | the message(s) to pass to gcloude-node topic#publish() |
+| messages | <code>Object</code> &#124; <code>Array.&lt;Object&gt;</code> | the message(s) to pass to gcloude-node topic#publish() |
 
 <a name="module_oakpubsub..deleteTopic_P"></a>
 ### oakpubsub~deleteTopic_P(topic) ⇒ <code>Promise</code>
@@ -168,6 +169,18 @@ Remote call to pull messages from server
 | --- | --- | --- |
 | subscription | <code>Object</code> | gcloud-node subscription object |
 | [options] | <code>Object</code> | additional gcloud-node options for subscription#pull() |
+
+<a name="module_oakpubsub..makeMessage"></a>
+### oakpubsub~makeMessage(data, [attributes]) ⇒ <code>Object</code>
+Utility to create a message object
+
+**Kind**: inner method of <code>[oakpubsub](#module_oakpubsub)</code>  
+**Returns**: <code>Object</code> - message object that can be used in publish_P()  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| data | <code>string</code> &#124; <code>number</code> &#124; <code>array</code> &#124; <code>Object</code> | to publish (gcloud-node will JSON encode/decode for you) |
+| [attributes] | <code>Object</code> | additional key-value attributes attached to the message |
 
 
 ## Update Docs

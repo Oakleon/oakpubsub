@@ -176,7 +176,7 @@ export function pull_P(subscription, options) {
 
 /**
  * Utility to create a message object
- * @param {{string|number|array|Object}} data to publish (gcloud-node will JSON encode/decode for you)
+ * @param {(string|number|array|Object)} data to publish (gcloud-node will JSON encode/decode for you)
  * @param {Object} [attributes] - additional key-value attributes attached to the message
  * @returns {Object} message object that can be used in publish_P()
  */
