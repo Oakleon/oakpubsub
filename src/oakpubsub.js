@@ -42,7 +42,7 @@ export function createTopic_P(pubsub, topic_title) {
  * @param {Object} pubsub gcloud-node pubsub object
  * @param {string} topic_title - the name of the topic
  * @param {Object} [options] - additional gcloud-node options
- * @returns {Object} an authenticated pubsub object from gcloud-node
+ * @returns {Object} topic returned by gcloud-node pubsub#topic()
  */
 export function getTopic(pubsub, topic_title, options) {
     return pubsub.topic(topic_title, options);
@@ -53,7 +53,7 @@ export function getTopic(pubsub, topic_title, options) {
  * @param {Object} pubsub gcloud-node pubsub object
  * @param {string} topic_title - the name of the topic
  * @param {Object} [options] - additional gcloud-node options
- * @returns {Promise} resolving to the subscription returned by gcloud-node pubsub#createTopic()
+ * @returns {Promise} resolving to the topic returned by gcloud-node pubsub#createTopic()
  */
 export function getOrCreateTopic_P(pubsub, topic_title, options) {
 

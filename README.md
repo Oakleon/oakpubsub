@@ -53,7 +53,7 @@ Remote call to create a google pubsub topic
 Get a pubsub topic, for use in subsequent module function calls
 
 **Kind**: inner method of <code>[oakpubsub](#module_oakpubsub)</code>  
-**Returns**: <code>Object</code> - an authenticated pubsub object from gcloud-node  
+**Returns**: <code>Object</code> - topic returned by gcloud-node pubsub#topic()  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -66,7 +66,7 @@ Get a pubsub topic, for use in subsequent module function calls
 Remote call to get or create a topic
 
 **Kind**: inner method of <code>[oakpubsub](#module_oakpubsub)</code>  
-**Returns**: <code>Promise</code> - resolving to the subscription returned by gcloud-node pubsub#createTopic()  
+**Returns**: <code>Promise</code> - resolving to the topic returned by gcloud-node pubsub#createTopic()  
 
 | Param | Type | Description |
 | --- | --- | --- |
