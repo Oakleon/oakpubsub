@@ -28,6 +28,16 @@ export function getPubsub(options) {
 }
 
 /**
+ * Remote call to create a google pubsub topic
+ * @param {Object} pubsub gcloud-node pubsub object
+ * @param {string} topic_title - the name of the topic
+ * @returns {Promise} resolving to topic returned by gcloud-node pubsub#createTopic()
+ */
+export function createTopic_P(pubsub, topic_title) {
+    return _Promise.promisify(pubsub.createTopic, {context: pubsub})(topic_title);
+}
+
+/**
  * Get a pubsub topic, for use in subsequent module function calls
  * @param {Object} pubsub gcloud-node pubsub object
  * @param {string} topic_title - the name of the topic
@@ -36,6 +46,24 @@ export function getPubsub(options) {
  */
 export function getTopic(pubsub, topic_title, options) {
     return pubsub.topic(topic_title, options);
+}
+
+/**
+ * Remote call to get or create a topic
+ * @param {Object} pubsub gcloud-node pubsub object
+ * @param {string} topic_title - the name of the topic
+ * @param {Object} [options] - additional gcloud-node options
+ * @returns {Promise} resolving to the subscription returned by gcloud-node pubsub#createTopic()
+ */
+export function getOrCreateTopic_P(pubsub, topic_title, options) {
+
+    return createTopic_P(pubsub, topic_title, options)
+    .catch(function(error) {
+        if (!error.code || error.code !== 409) {   //409: Resource already exists in the project
+            throw error;
+        }
+        return getTopic(pubsub, topic_title, options);
+    });
 }
 
 /**
@@ -71,16 +99,6 @@ export function processTopics_P(pubsub, worker_P, query_options = {}) {
 }
 
 /**
- * Remote call to create a google pubsub topic
- * @param {Object} pubsub gcloud-node pubsub object
- * @param {string} topic_title - the name of the topic
- * @returns {Promise} resolving to topic returned by gcloud-node pubsub#createTopic()
- */
-export function createTopic_P(pubsub, topic_title) {
-    return _Promise.promisify(pubsub.createTopic, {context: pubsub})(topic_title);
-}
-
-/**
  * Remote call to get or create a subscription
  * @param {Object} topic gcloud-node topic object
  * @param {string} subscription_id - the name of the subscription
@@ -88,6 +106,8 @@ export function createTopic_P(pubsub, topic_title) {
  * @returns {Promise} resolving to the subscription returned by gcloud-node pubsub#createTopic()
  */
 export function getOrCreateSubscription_P(topic, subscription_id, options) {
+
+    console.log('deprecated: getOrCreateSubscription_P() - use createSubscription_P() with reuseExisting option');
 
     return createSubscription_P(topic, subscription_id, options)
     .catch(function(error) {
@@ -103,7 +123,7 @@ export function getOrCreateSubscription_P(topic, subscription_id, options) {
  * Gets a subscription
  * @param {Object} topic gcloud-node topic object
  * @param {string} subscription_id - the name of the subscription
- * @param {Object} [options] - additional gcloud-node options
+ * @param {Object} [options] - additional gcloud-node options: autoAck and interval
  * @returns {Object} returns a subscription from gcloud-node topic#subscription()
  */
 export function getSubscription(topic, subscription_id, options) {
@@ -114,7 +134,7 @@ export function getSubscription(topic, subscription_id, options) {
  * Remote call to create a subscription
  * @param {Object} topic gcloud-node topic object
  * @param {string} subscription_id - the name of the subscription
- * @param {Object} [options] - additional gcloud-node options
+ * @param {Object} [options] - additional gcloud-node options: ackDeadlineSeconds, autoAck, interval, reuseExisting
  * @returns {Promise} resolving to subscription returned by gcloud-node topic#subscribe()
  */
 export function createSubscription_P(topic, subscription_id, options) {

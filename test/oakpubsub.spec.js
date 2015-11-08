@@ -121,6 +121,20 @@ describe('Oakpubsub', function() {
         });
     });
 
+    describe('#Oakpubsub.getorCreateTopic()', function(){
+        it('returns a pubsub topic that may have already been created', function(done){
+            _Oakpubsub.getOrCreateTopic_P(pubsub, _topic_name)
+            .then(function(t2) {
+                _Assert(t2);
+                _Assert(t2.projectId === _project_id);
+                done();
+            })
+            .catch(function(e) {
+                done(e);
+            });
+        });
+    });
+
     describe('#Oakpubsub.processTopics_P()', function(){
 
         it('returns multiple pubsub topics', async function(){
@@ -156,9 +170,9 @@ describe('Oakpubsub', function() {
         });
     });
 
-    describe('#Oakpubsub.getOrCreateSubscription_P()', function(){
+    describe('#Oakpubsub.createSubscription_P()', function(){
         it('returns a pubsub subscription', function(done){
-            _Oakpubsub.getOrCreateSubscription_P(topic, _subscription_name)
+            _Oakpubsub.createSubscription_P(topic, _subscription_name, {reuseExisting: true})
             .then(function(s) {
 
                 subscription = s;   //set global

@@ -11,9 +11,10 @@ oakpubsub module.
 
 * [oakpubsub](#module_oakpubsub)
   * [~getPubsub(options)](#module_oakpubsub..getPubsub) ⇒ <code>Object</code>
-  * [~getTopic(pubsub, topic_title, [options])](#module_oakpubsub..getTopic) ⇒ <code>Object</code>
-  * [~processTopics_P(pubsub, worker_P, [query_options])](#module_oakpubsub..processTopics_P) ⇒ <code>Promise</code>
   * [~createTopic_P(pubsub, topic_title)](#module_oakpubsub..createTopic_P) ⇒ <code>Promise</code>
+  * [~getTopic(pubsub, topic_title, [options])](#module_oakpubsub..getTopic) ⇒ <code>Object</code>
+  * [~getOrCreateTopic_P(pubsub, topic_title, [options])](#module_oakpubsub..getOrCreateTopic_P) ⇒ <code>Promise</code>
+  * [~processTopics_P(pubsub, worker_P, [query_options])](#module_oakpubsub..processTopics_P) ⇒ <code>Promise</code>
   * [~getOrCreateSubscription_P(topic, subscription_id, [options])](#module_oakpubsub..getOrCreateSubscription_P) ⇒ <code>Promise</code>
   * [~getSubscription(topic, subscription_id, [options])](#module_oakpubsub..getSubscription) ⇒ <code>Object</code>
   * [~createSubscription_P(topic, subscription_id, [options])](#module_oakpubsub..createSubscription_P) ⇒ <code>Promise</code>
@@ -35,12 +36,37 @@ Get a pubsub object, for use in subsequent module function calls
 | --- | --- | --- |
 | options | <code>Object</code> | passed directly to gcloud-node for i.e. authentication |
 
+<a name="module_oakpubsub..createTopic_P"></a>
+### oakpubsub~createTopic_P(pubsub, topic_title) ⇒ <code>Promise</code>
+Remote call to create a google pubsub topic
+
+**Kind**: inner method of <code>[oakpubsub](#module_oakpubsub)</code>  
+**Returns**: <code>Promise</code> - resolving to topic returned by gcloud-node pubsub#createTopic()  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| pubsub | <code>Object</code> | gcloud-node pubsub object |
+| topic_title | <code>string</code> | the name of the topic |
+
 <a name="module_oakpubsub..getTopic"></a>
 ### oakpubsub~getTopic(pubsub, topic_title, [options]) ⇒ <code>Object</code>
 Get a pubsub topic, for use in subsequent module function calls
 
 **Kind**: inner method of <code>[oakpubsub](#module_oakpubsub)</code>  
 **Returns**: <code>Object</code> - an authenticated pubsub object from gcloud-node  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| pubsub | <code>Object</code> | gcloud-node pubsub object |
+| topic_title | <code>string</code> | the name of the topic |
+| [options] | <code>Object</code> | additional gcloud-node options |
+
+<a name="module_oakpubsub..getOrCreateTopic_P"></a>
+### oakpubsub~getOrCreateTopic_P(pubsub, topic_title, [options]) ⇒ <code>Promise</code>
+Remote call to get or create a topic
+
+**Kind**: inner method of <code>[oakpubsub](#module_oakpubsub)</code>  
+**Returns**: <code>Promise</code> - resolving to the subscription returned by gcloud-node pubsub#createTopic()  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -60,18 +86,6 @@ Helper to get multiple pubsub topics and process them asynchronously
 | pubsub | <code>Object</code> | gcloud-node pubsub object |
 | worker_P | <code>Promise</code> &#124; <code>function</code> | a worker function or promise that handles the response topics |
 | [query_options] | <code>Object</code> | additional gcloud-node pubsub query options |
-
-<a name="module_oakpubsub..createTopic_P"></a>
-### oakpubsub~createTopic_P(pubsub, topic_title) ⇒ <code>Promise</code>
-Remote call to create a google pubsub topic
-
-**Kind**: inner method of <code>[oakpubsub](#module_oakpubsub)</code>  
-**Returns**: <code>Promise</code> - resolving to topic returned by gcloud-node pubsub#createTopic()  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| pubsub | <code>Object</code> | gcloud-node pubsub object |
-| topic_title | <code>string</code> | the name of the topic |
 
 <a name="module_oakpubsub..getOrCreateSubscription_P"></a>
 ### oakpubsub~getOrCreateSubscription_P(topic, subscription_id, [options]) ⇒ <code>Promise</code>
@@ -97,7 +111,7 @@ Gets a subscription
 | --- | --- | --- |
 | topic | <code>Object</code> | gcloud-node topic object |
 | subscription_id | <code>string</code> | the name of the subscription |
-| [options] | <code>Object</code> | additional gcloud-node options |
+| [options] | <code>Object</code> | additional gcloud-node options: autoAck and interval |
 
 <a name="module_oakpubsub..createSubscription_P"></a>
 ### oakpubsub~createSubscription_P(topic, subscription_id, [options]) ⇒ <code>Promise</code>
@@ -110,7 +124,7 @@ Remote call to create a subscription
 | --- | --- | --- |
 | topic | <code>Object</code> | gcloud-node topic object |
 | subscription_id | <code>string</code> | the name of the subscription |
-| [options] | <code>Object</code> | additional gcloud-node options |
+| [options] | <code>Object</code> | additional gcloud-node options: ackDeadlineSeconds, autoAck, interval, reuseExisting |
 
 <a name="module_oakpubsub..publish_P"></a>
 ### oakpubsub~publish_P(topic, messages) ⇒ <code>Promise</code>
