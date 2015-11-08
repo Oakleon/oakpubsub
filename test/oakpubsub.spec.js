@@ -35,27 +35,6 @@ function get_init_options() {
     return { projectId: _project_id };
 }
 
-function deleteTestTopics_P(pubsub) {
-    let regex = new RegExp(`^${_topic_prefix}`);
-
-    let isTestTopic = (t_test) => {
-        let t_title = t_test.name.split('/').pop();
-        return t_title.match(regex);
-    };
-
-    let delete_P = function delete_P(alltopics) {
-
-        let test_topics = _R.filter(isTestTopic, alltopics);
-        return _Promise.resolve(test_topics)
-            .map((tt) => {
-                return _Oakpubsub.deleteTopic_P(tt);
-            }, {concurrency: 5});
-    };
-
-    return _Oakpubsub.processTopics_P(pubsub, delete_P, {pageSize: 10});
-}
-
-
 describe('Oakpubsub', function() {
 
     this.slow(3000);
@@ -76,7 +55,7 @@ describe('Oakpubsub', function() {
         pubsub = _Oakpubsub.getPubsub(get_init_options());
         _Assert(pubsub);
 
-        await deleteTestTopics_P(pubsub);
+        await _Oakpubsub.deleteTopicsMatching_P(pubsub, `^${_topic_prefix}`);
 
         let del_topic        = _Oakpubsub.getTopic(pubsub, _topic_name);
         let del_subscription = _Oakpubsub.getSubscription(del_topic, _subscription_name);
@@ -93,7 +72,7 @@ describe('Oakpubsub', function() {
     //Would be nice if pubsub supported namespaces
     after(async () => {
         await _Oakpubsub.deleteSubscription_P(subscription);
-        await deleteTestTopics_P(pubsub);
+        await _Oakpubsub.deleteTopicsMatching_P(pubsub, `^${_topic_prefix}`);
     });
 
 

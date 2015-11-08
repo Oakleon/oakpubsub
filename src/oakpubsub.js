@@ -2,6 +2,7 @@
 
 import _Gcloud from 'gcloud';
 import _Promise from 'bluebird';
+import _R from 'ramda';
 
 //workaround for errors not propagating from async await
 process.on('unhandledRejection', err => { throw err; });
@@ -64,38 +65,6 @@ export function getOrCreateTopic_P(pubsub, topic_title, options) {
         }
         return getTopic(pubsub, topic_title, options);
     });
-}
-
-/**
- * Helper to get multiple pubsub topics and process them asynchronously
- * @param {Object} pubsub gcloud-node pubsub object
- * @param {(Promise|function)} worker_P - a worker function or promise that handles the response topics
- * @param {Object} [query_options] - additional gcloud-node pubsub query options
- * @returns {Promise} resolving to the final apiResponse
- */
-export function processTopics_P(pubsub, worker_P, query_options = {}) {
-
-    query_options.autoPaginate = false;
-
-    let fun = function(resolve, reject) {
-
-        async function onComplete(error, topics, nextQuery, apiResponse) {
-
-            if (error) {
-                return reject(error);
-            }
-
-            await worker_P(topics);
-
-            if (!nextQuery) {
-                return resolve(apiResponse);
-            }
-            pubsub.getTopics(nextQuery, onComplete);
-        };
-        pubsub.getTopics(query_options, onComplete);
-    };
-
-    return new _Promise(fun);
 }
 
 /**
@@ -202,4 +171,66 @@ export function pull_P(subscription, options) {
  */
 export function makeMessage(data, attributes = undefined) {
     return {data, attributes};
+}
+
+/**
+ * Helper to get multiple pubsub topics and process them asynchronously
+ * @param {Object} pubsub gcloud-node pubsub object
+ * @param {(Promise|function)} worker_P - a worker function or promise that handles the response topics
+ * @param {Object} [query_options] - additional gcloud-node pubsub query options
+ * @returns {Promise} resolving to the final apiResponse
+ */
+export function processTopics_P(pubsub, worker_P, query_options = {}) {
+
+    query_options.autoPaginate = false;
+
+    let fun = function(resolve, reject) {
+
+        async function onComplete(error, topics, nextQuery, apiResponse) {
+
+            if (error) {
+                return reject(error);
+            }
+
+            await worker_P(topics);
+
+            if (!nextQuery) {
+                return resolve(apiResponse);
+            }
+            pubsub.getTopics(nextQuery, onComplete);
+        };
+        pubsub.getTopics(query_options, onComplete);
+    };
+
+    return new _Promise(fun);
+}
+
+/**
+ * Helper to get delete pubsub topics matching a regular expression, using processTopics_P()
+ * @param {Object} pubsub gcloud-node pubsub object
+ * @param {string} regex, javascript regular expression in string format
+ * @returns {Promise} resolving to the final apiResponse
+ */
+export function deleteTopicsMatching_P(pubsub, regex) {
+    if (typeof(regex) !== 'string') {
+        throw TypeError("regex must be a string");
+    }
+
+    regex = new RegExp(regex);
+
+    let isTopicMatching = (topic) => {
+        let t_title = topic.name.split('/').pop();
+        return t_title.match(regex);
+    };
+
+    let delete_P = function delete_P(alltopics) {
+
+        let test_topics = _R.filter(isTopicMatching, alltopics);
+        return _Promise.resolve(test_topics)
+            .map((topic) => {
+                return deleteTopic_P(topic);
+            }, {concurrency: 5});
+    };
+
+    return processTopics_P(pubsub, delete_P, {pageSize: 10});
 }

@@ -14,7 +14,6 @@ oakpubsub module.
   * [~createTopic_P(pubsub, topic_title)](#module_oakpubsub..createTopic_P) ⇒ <code>Promise</code>
   * [~getTopic(pubsub, topic_title, [options])](#module_oakpubsub..getTopic) ⇒ <code>Object</code>
   * [~getOrCreateTopic_P(pubsub, topic_title, [options])](#module_oakpubsub..getOrCreateTopic_P) ⇒ <code>Promise</code>
-  * [~processTopics_P(pubsub, worker_P, [query_options])](#module_oakpubsub..processTopics_P) ⇒ <code>Promise</code>
   * [~getOrCreateSubscription_P(topic, subscription_id, [options])](#module_oakpubsub..getOrCreateSubscription_P) ⇒ <code>Promise</code>
   * [~getSubscription(topic, subscription_id, [options])](#module_oakpubsub..getSubscription) ⇒ <code>Object</code>
   * [~createSubscription_P(topic, subscription_id, [options])](#module_oakpubsub..createSubscription_P) ⇒ <code>Promise</code>
@@ -24,6 +23,8 @@ oakpubsub module.
   * [~ack_P(subscription, acknowledge)](#module_oakpubsub..ack_P) ⇒ <code>Promise</code>
   * [~pull_P(subscription, [options])](#module_oakpubsub..pull_P) ⇒ <code>Promise</code>
   * [~makeMessage(data, [attributes])](#module_oakpubsub..makeMessage) ⇒ <code>Object</code>
+  * [~processTopics_P(pubsub, worker_P, [query_options])](#module_oakpubsub..processTopics_P) ⇒ <code>Promise</code>
+  * [~deleteTopicsMatching_P(pubsub, javascript)](#module_oakpubsub..deleteTopicsMatching_P) ⇒ <code>Promise</code>
 
 <a name="module_oakpubsub..getPubsub"></a>
 ### oakpubsub~getPubsub(options) ⇒ <code>Object</code>
@@ -73,19 +74,6 @@ Remote call to get or create a topic
 | pubsub | <code>Object</code> | gcloud-node pubsub object |
 | topic_title | <code>string</code> | the name of the topic |
 | [options] | <code>Object</code> | additional gcloud-node options |
-
-<a name="module_oakpubsub..processTopics_P"></a>
-### oakpubsub~processTopics_P(pubsub, worker_P, [query_options]) ⇒ <code>Promise</code>
-Helper to get multiple pubsub topics and process them asynchronously
-
-**Kind**: inner method of <code>[oakpubsub](#module_oakpubsub)</code>  
-**Returns**: <code>Promise</code> - resolving to the final apiResponse  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| pubsub | <code>Object</code> | gcloud-node pubsub object |
-| worker_P | <code>Promise</code> &#124; <code>function</code> | a worker function or promise that handles the response topics |
-| [query_options] | <code>Object</code> | additional gcloud-node pubsub query options |
 
 <a name="module_oakpubsub..getOrCreateSubscription_P"></a>
 ### oakpubsub~getOrCreateSubscription_P(topic, subscription_id, [options]) ⇒ <code>Promise</code>
@@ -195,6 +183,31 @@ Utility to create a message object
 | --- | --- | --- |
 | data | <code>string</code> &#124; <code>number</code> &#124; <code>array</code> &#124; <code>Object</code> | to publish (gcloud-node will JSON encode/decode for you) |
 | [attributes] | <code>Object</code> | additional key-value attributes attached to the message |
+
+<a name="module_oakpubsub..processTopics_P"></a>
+### oakpubsub~processTopics_P(pubsub, worker_P, [query_options]) ⇒ <code>Promise</code>
+Helper to get multiple pubsub topics and process them asynchronously
+
+**Kind**: inner method of <code>[oakpubsub](#module_oakpubsub)</code>  
+**Returns**: <code>Promise</code> - resolving to the final apiResponse  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| pubsub | <code>Object</code> | gcloud-node pubsub object |
+| worker_P | <code>Promise</code> &#124; <code>function</code> | a worker function or promise that handles the response topics |
+| [query_options] | <code>Object</code> | additional gcloud-node pubsub query options |
+
+<a name="module_oakpubsub..deleteTopicsMatching_P"></a>
+### oakpubsub~deleteTopicsMatching_P(pubsub, javascript) ⇒ <code>Promise</code>
+Helper to get delete pubsub topics matching a regular expression, using processTopics_P()
+
+**Kind**: inner method of <code>[oakpubsub](#module_oakpubsub)</code>  
+**Returns**: <code>Promise</code> - resolving to the final apiResponse  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| pubsub | <code>Object</code> | gcloud-node pubsub object |
+| javascript | <code>string</code> | regular expression in string format |
 
 
 ## Update Docs

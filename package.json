@@ -26,7 +26,8 @@
   "dependencies": {
     "babel-runtime": "^5.8.29",
     "bluebird": "^3.0.5",
-    "gcloud": "^0.24.1"
+    "gcloud": "^0.24.1",
+    "ramda": "^0.18.0"
   },
   "devDependencies": {
     "babel": "^5.8.29",
@@ -36,7 +37,6 @@
     "gulp-babel": "^6.0.0",
     "jsdoc-to-markdown": "^1.2.0",
     "mocha": "^2.3.3",
-    "ramda": "^0.18.0",
     "source-map-support": "^0.3.1"
   }
 }
