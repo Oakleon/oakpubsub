@@ -208,7 +208,7 @@ export function processTopics_P(pubsub, worker_P, query_options = {}) {
 /**
  * Helper to get delete pubsub topics matching a regular expression, using processTopics_P()
  * @param {Object} pubsub gcloud-node pubsub object
- * @param {string} regex, javascript regular expression in string format
+ * @param {string} regex, javascript regular expression in string format, e.g. '^match_me'
  * @returns {Promise} resolving to the final apiResponse
  */
 export function deleteTopicsMatching_P(pubsub, regex) {
