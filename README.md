@@ -3,7 +3,7 @@ A partial [gcloud-node](https://github.com/GoogleCloudPlatform/gcloud-node) (goo
 
 See tests for usage.
 
-Tested with node v4.2.1
+Tested with node v4 LTS
 
 ## API Reference
 oakpubsub module.
@@ -24,7 +24,7 @@ oakpubsub module.
   * [~pull_P(subscription, [options])](#module_oakpubsub..pull_P) ⇒ <code>Promise</code>
   * [~makeMessage(data, [attributes])](#module_oakpubsub..makeMessage) ⇒ <code>Object</code>
   * [~processTopics_P(pubsub, worker_P, [query_options])](#module_oakpubsub..processTopics_P) ⇒ <code>Promise</code>
-  * [~deleteTopicsMatching_P(pubsub, javascript)](#module_oakpubsub..deleteTopicsMatching_P) ⇒ <code>Promise</code>
+  * [~deleteTopicsMatching_P(pubsub, regex, [page_size], [concurrency])](#module_oakpubsub..deleteTopicsMatching_P) ⇒ <code>Promise</code>
 
 <a name="module_oakpubsub..getPubsub"></a>
 ### oakpubsub~getPubsub(options) ⇒ <code>Object</code>
@@ -194,11 +194,11 @@ Helper to get multiple pubsub topics and process them asynchronously
 | Param | Type | Description |
 | --- | --- | --- |
 | pubsub | <code>Object</code> | gcloud-node pubsub object |
-| worker_P | <code>Promise</code> &#124; <code>function</code> | a worker function or promise that handles the response topics |
+| worker_P | <code>Promise</code> &#124; <code>function</code> | a worker function or promise that handles the response topic array |
 | [query_options] | <code>Object</code> | additional gcloud-node pubsub query options |
 
 <a name="module_oakpubsub..deleteTopicsMatching_P"></a>
-### oakpubsub~deleteTopicsMatching_P(pubsub, javascript) ⇒ <code>Promise</code>
+### oakpubsub~deleteTopicsMatching_P(pubsub, regex, [page_size], [concurrency]) ⇒ <code>Promise</code>
 Helper to get delete pubsub topics matching a regular expression, using processTopics_P()
 
 **Kind**: inner method of <code>[oakpubsub](#module_oakpubsub)</code>  
@@ -207,7 +207,9 @@ Helper to get delete pubsub topics matching a regular expression, using processT
 | Param | Type | Description |
 | --- | --- | --- |
 | pubsub | <code>Object</code> | gcloud-node pubsub object |
-| javascript | <code>string</code> | regular expression in string format |
+| regex | <code>string</code> | javascript regular expression in string format, e.g. '^match_me' |
+| [page_size] | <code>integer</code> | number of topics to fetch per response (default: 100) |
+| [concurrency] | <code>integer</code> | max number of topics to delete simultaneously (default: 5) |
 
 
 ## Update Docs

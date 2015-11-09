@@ -158,8 +158,7 @@ export function ack_P(subscription, ackIds) {
  * @param {Object} [options] - additional gcloud-node options for subscription#pull()
  * @returns {Promise} resolving to array of messages returned by gcloud-node subscription#pull()
  */
-export function pull_P(subscription, options) {
-    options = options || {};
+export function pull_P(subscription, options = {}) {
     return _Promise.promisify(subscription.pull, {context: subscription})(options);
 }
 
@@ -176,7 +175,7 @@ export function makeMessage(data, attributes = undefined) {
 /**
  * Helper to get multiple pubsub topics and process them asynchronously
  * @param {Object} pubsub gcloud-node pubsub object
- * @param {(Promise|function)} worker_P - a worker function or promise that handles the response topics
+ * @param {(Promise|function)} worker_P - a worker function or promise that handles the response topic array
  * @param {Object} [query_options] - additional gcloud-node pubsub query options
  * @returns {Promise} resolving to the final apiResponse
  */
@@ -208,20 +207,22 @@ export function processTopics_P(pubsub, worker_P, query_options = {}) {
 /**
  * Helper to get delete pubsub topics matching a regular expression, using processTopics_P()
  * @param {Object} pubsub gcloud-node pubsub object
- * @param {string} regex, javascript regular expression in string format, e.g. '^match_me'
+ * @param {string} regex javascript regular expression in string format, e.g. '^match_me'
+ * @param {integer} [page_size] number of topics to fetch per response (default: 100)
+ * @param {integer} [concurrency] max number of topics to delete simultaneously (default: 5)
  * @returns {Promise} resolving to the final apiResponse
  */
-export function deleteTopicsMatching_P(pubsub, regex) {
+export function deleteTopicsMatching_P(pubsub, regex, page_size = 100, concurrency = 5) {
     if (typeof(regex) !== 'string') {
         throw TypeError("regex must be a string");
     }
 
     regex = new RegExp(regex);
 
-    let isTopicMatching = (topic) => {
+    function isTopicMatching(topic) {
         let t_title = topic.name.split('/').pop();
         return t_title.match(regex);
-    };
+    }
 
     let delete_P = function delete_P(alltopics) {
 
@@ -229,8 +230,8 @@ export function deleteTopicsMatching_P(pubsub, regex) {
         return _Promise.resolve(test_topics)
             .map((topic) => {
                 return deleteTopic_P(topic);
-            }, {concurrency: 5});
+            }, {concurrency});
     };
 
-    return processTopics_P(pubsub, delete_P, {pageSize: 10});
+    return processTopics_P(pubsub, delete_P, {page_size});
 }
