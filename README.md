@@ -3,6 +3,8 @@ A partial [gcloud-node](https://github.com/GoogleCloudPlatform/gcloud-node) (goo
 
 See tests for usage.
 
+Use care when doing mass deletes of topics of subscriptions, an incorrect regular expression could destroy data. It would be nice if google pubsub supported namespaces to avoid potential clobbering.
+
 Tested with node v4 LTS
 
 ## API Reference
@@ -24,7 +26,9 @@ oakpubsub module.
   * [~pull_P(subscription, [options])](#module_oakpubsub..pull_P) ⇒ <code>Promise</code>
   * [~makeMessage(data, [attributes])](#module_oakpubsub..makeMessage) ⇒ <code>Object</code>
   * [~processTopics_P(pubsub, worker_P, [query_options])](#module_oakpubsub..processTopics_P) ⇒ <code>Promise</code>
+  * [~processSubs_P(pubsub, worker_P, [query_options])](#module_oakpubsub..processSubs_P) ⇒ <code>Promise</code>
   * [~deleteTopicsMatching_P(pubsub, regex, [page_size], [concurrency])](#module_oakpubsub..deleteTopicsMatching_P) ⇒ <code>Promise</code>
+  * [~deleteSubsMatching_P(pubsub, regex, [page_size], [concurrency])](#module_oakpubsub..deleteSubsMatching_P) ⇒ <code>Promise</code>
 
 <a name="module_oakpubsub..getPubsub"></a>
 ### oakpubsub~getPubsub(options) ⇒ <code>Object</code>
@@ -197,9 +201,22 @@ Helper to get multiple pubsub topics and process them asynchronously
 | worker_P | <code>Promise</code> &#124; <code>function</code> | a worker function or promise that handles the response topic array |
 | [query_options] | <code>Object</code> | additional gcloud-node pubsub query options |
 
+<a name="module_oakpubsub..processSubs_P"></a>
+### oakpubsub~processSubs_P(pubsub, worker_P, [query_options]) ⇒ <code>Promise</code>
+Helper to get multiple pubsub subscriptions and process them asynchronously
+
+**Kind**: inner method of <code>[oakpubsub](#module_oakpubsub)</code>  
+**Returns**: <code>Promise</code> - resolving to the final apiResponse  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| pubsub | <code>Object</code> | gcloud-node pubsub object |
+| worker_P | <code>Promise</code> &#124; <code>function</code> | a worker function or promise that handles the response topic array |
+| [query_options] | <code>Object</code> | additional gcloud-node pubsub query options |
+
 <a name="module_oakpubsub..deleteTopicsMatching_P"></a>
 ### oakpubsub~deleteTopicsMatching_P(pubsub, regex, [page_size], [concurrency]) ⇒ <code>Promise</code>
-Helper to get delete pubsub topics matching a regular expression, using processTopics_P()
+Helper to get delete pubsub topics matching a regular expression, using processTopics_P and deleteTopic_P
 
 **Kind**: inner method of <code>[oakpubsub](#module_oakpubsub)</code>  
 **Returns**: <code>Promise</code> - resolving to the final apiResponse  
@@ -210,6 +227,20 @@ Helper to get delete pubsub topics matching a regular expression, using processT
 | regex | <code>string</code> | javascript regular expression in string format, e.g. '^match_me' |
 | [page_size] | <code>integer</code> | number of topics to fetch per response (default: 100) |
 | [concurrency] | <code>integer</code> | max number of topics to delete simultaneously (default: 5) |
+
+<a name="module_oakpubsub..deleteSubsMatching_P"></a>
+### oakpubsub~deleteSubsMatching_P(pubsub, regex, [page_size], [concurrency]) ⇒ <code>Promise</code>
+Helper to get delete pubsub subscriptions matching a regular expression, using processSubs_P and deleteSubscription_P
+
+**Kind**: inner method of <code>[oakpubsub](#module_oakpubsub)</code>  
+**Returns**: <code>Promise</code> - resolving to the final apiResponse  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| pubsub | <code>Object</code> | gcloud-node pubsub object |
+| regex | <code>string</code> | javascript regular expression matching subscription name in string format, e.g. '^match_me' |
+| [page_size] | <code>integer</code> | number of subscriptions to fetch per response (default: 100) |
+| [concurrency] | <code>integer</code> | max number of subscriptions to delete simultaneously (default: 5) |
 
 
 ## Update Docs

@@ -41,37 +41,28 @@ describe('Oakpubsub', function() {
     this.timeout(10000);
 
     let pubsub;
-    let topic;
-    let subscription;
+    let topic_g;
+    let subscription_g;
 
-    //bug in gcloud library - test_message gets mutated
+    // bug in gcloud library - test_message gets mutated
     let original_test_message1 = _Oakpubsub.makeMessage(['this', 'is', 'a', 'test' ], { att_key: "att_value" });
     let test_message1          = _R.clone(original_test_message1);
     let test_message1_id;
 
-    //Cleanup after any previously failed tests
     before(async () => {
 
+        // set global var
         pubsub = _Oakpubsub.getPubsub(get_init_options());
         _Assert(pubsub);
 
+        // Cleanup after any previously failed tests
         await _Oakpubsub.deleteTopicsMatching_P(pubsub, `^${_topic_prefix}`);
-
-        let del_topic        = _Oakpubsub.getTopic(pubsub, _topic_name);
-        let del_subscription = _Oakpubsub.getSubscription(del_topic, _subscription_name);
-
-        await _Oakpubsub.deleteSubscription_P(del_subscription)
-        .catch((err) => {
-            //ignore if this subscription does not exist
-        });
-
+        await _Oakpubsub.deleteSubsMatching_P(pubsub, `^${_subscription_name}`);
     });
 
-    //Delete test subscription and topics
-    //Is there a better way to safely delete test topics?
-    //Would be nice if pubsub supported namespaces
+    // Delete test subscription and topics
     after(async () => {
-        await _Oakpubsub.deleteSubscription_P(subscription);
+        await _Oakpubsub.deleteSubsMatching_P(pubsub, `^${_subscription_name}`);
         await _Oakpubsub.deleteTopicsMatching_P(pubsub, `^${_topic_prefix}`);
     });
 
@@ -81,9 +72,9 @@ describe('Oakpubsub', function() {
         it('creates and returns a pubsub topic', function(done){
             _Oakpubsub.createTopic_P(pubsub, _topic_name)
             .then(function(t) {
-                topic = t;  //Set global
-                _Assert(topic);
-                _Assert(topic.projectId === _project_id);
+                topic_g = t;  //Set global
+                _Assert(topic_g);
+                _Assert(topic_g.projectId === _project_id);
                 done();
             })
             .catch(function(e) {
@@ -116,9 +107,13 @@ describe('Oakpubsub', function() {
 
     describe('#Oakpubsub.processTopics_P()', function(){
 
+        //for projects with many topics
+        this.timeout(20000);
+        this.slow(5000);
+
         it('returns multiple pubsub topics', async function(){
 
-            let num_topics  = 10;
+            let num_topics  = 11;
             let topic_names = [];
 
             _R.range(0, num_topics).map((i) => {
@@ -144,18 +139,60 @@ describe('Oakpubsub', function() {
                 all_test_tops = all_test_tops.concat(tts);
             };
 
-            await _Oakpubsub.processTopics_P(pubsub, worker_P, {pageSize: 4});
+            await _Oakpubsub.processTopics_P(pubsub, worker_P, {pageSize: 10});
             _Assert(all_test_tops.length >= num_topics);
+        });
+    });
+
+    describe('#Oakpubsub.processSubs_P()', function(){
+
+        //for projects with many subscriptions
+        this.timeout(20000);
+        this.slow(5000);
+
+        it('returns multiple pubsub subscriptions', async function(){
+
+            let num_subs = 11;
+            let topic_name = `${_topic_name}_foobar`;
+            let subscription_names = [];
+
+            let topic = await _Oakpubsub.createTopic_P(pubsub, topic_name);
+
+            _R.range(0, num_subs).map((i) => {
+                subscription_names.push(`${_subscription_name}_${i}`);
+            });
+
+            await _Promise.resolve(subscription_names)
+            .map((name) => {
+                return _Oakpubsub.createSubscription_P(topic, name);
+            });
+
+            let regex = new RegExp(`^${_subscription_name}`);
+
+            let isTestSub = (sub) => {
+                let t_sub = sub.name.split('/').pop();
+                return t_sub.match(regex);
+            };
+
+            let all_test_subs = [];
+
+            function worker_P(subs) {
+                let test_subs = _R.filter(isTestSub, subs);
+                all_test_subs = all_test_subs.concat(test_subs);
+            };
+
+            await _Oakpubsub.processSubs_P(pubsub, worker_P, {pageSize: 10});
+            _Assert(all_test_subs.length >= num_subs);
         });
     });
 
     describe('#Oakpubsub.createSubscription_P()', function(){
         it('returns a pubsub subscription', function(done){
-            _Oakpubsub.createSubscription_P(topic, _subscription_name, {reuseExisting: true})
+            _Oakpubsub.createSubscription_P(topic_g, _subscription_name, {reuseExisting: true})
             .then(function(s) {
 
-                subscription = s;   //set global
-                _Assert(subscription);
+                subscription_g = s;   //set global
+                _Assert(subscription_g);
                 done();
             })
             .catch(function(e) {
@@ -171,7 +208,7 @@ describe('Oakpubsub', function() {
 
             let message_ids;
 
-            _Oakpubsub.publish_P(topic, test_message1)
+            _Oakpubsub.publish_P(topic_g, test_message1)
             .then(function(message_ids) {
                 _Assert(message_ids);
 
@@ -189,7 +226,7 @@ describe('Oakpubsub', function() {
 
         it('pulls a message from pubsub', function(done){
 
-            _Oakpubsub.pull_P(subscription)
+            _Oakpubsub.pull_P(subscription_g)
             .then(function(messages) {
 
                 _Assert(messages);
@@ -212,7 +249,7 @@ describe('Oakpubsub', function() {
 
         it('acks a message from pubsub', function(done){
 
-            _Oakpubsub.ack_P(subscription, ack_id)
+            _Oakpubsub.ack_P(subscription_g, ack_id)
             .then(function(r) {
                 _Assert(r);
                 done();
@@ -230,14 +267,14 @@ describe('Oakpubsub', function() {
             let original_test_message2 = _Oakpubsub.makeMessage({o: 'message has object with no attributes'});
             let test_message2          = _R.clone(original_test_message2);
 
-            await _Oakpubsub.publish_P(topic, test_message2);
-            let messages = await _Oakpubsub.pull_P(subscription);
+            await _Oakpubsub.publish_P(topic_g, test_message2);
+            let messages = await _Oakpubsub.pull_P(subscription_g);
             let message  = messages.pop();
 
             _Assert(_R.equals(message.data, original_test_message2.data));
             _Assert(_R.equals(message.attributes, original_test_message2.attributes));
 
-            await _Oakpubsub.ack_P(subscription, message.ackId);
+            await _Oakpubsub.ack_P(subscription_g, message.ackId);
         });
 
         it('array of messages: int and string', async function(){
@@ -248,8 +285,8 @@ describe('Oakpubsub', function() {
             let message1 = _Oakpubsub.makeMessage(d1);
             let message2 = _Oakpubsub.makeMessage(d2);
 
-            await _Oakpubsub.publish_P(topic, [message1, message2]);
-            let messages = await _Oakpubsub.pull_P(subscription);
+            await _Oakpubsub.publish_P(topic_g, [message1, message2]);
+            let messages = await _Oakpubsub.pull_P(subscription_g);
 
             let m_ids    = messages.map(
                 (m) => {    //both test the pulled data and get the ackIds
@@ -259,7 +296,7 @@ describe('Oakpubsub', function() {
             );
             _Assert.deepStrictEqual(messages.length, 2);
 
-            await _Oakpubsub.ack_P(subscription, m_ids);
+            await _Oakpubsub.ack_P(subscription_g, m_ids);
         });
     });
 });
