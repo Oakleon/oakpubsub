@@ -3,7 +3,7 @@ A partial [gcloud-node](https://github.com/GoogleCloudPlatform/gcloud-node) (goo
 
 See tests for usage.
 
-Use care when doing mass deletes of topics of subscriptions, an incorrect regular expression could destroy data. It would be nice if google pubsub supported namespaces to avoid potential clobbering.
+Use care when doing mass deletes of topics or subscriptions, an incorrect regular expression could destroy data. It would be nice if google pubsub supported namespaces to avoid potential clobbering.
 
 Tested with node v4 LTS
 

@@ -257,16 +257,17 @@ export function deleteTopicsMatching_P(pubsub, regex, page_size = 100, concurren
         return t_title.match(regex);
     }
 
-    let delete_P = function delete_P(alltopics) {
+    function delete_P(alltopics) {
 
         let del_topics = _R.filter(isTopicMatching, alltopics);
+
         return _Promise.resolve(del_topics)
             .map((topic) => {
                 return deleteTopic_P(topic);
             }, {concurrency});
     };
 
-    return processTopics_P(pubsub, delete_P, {page_size});
+    return processTopics_P(pubsub, delete_P, {pageSize: page_size});
 }
 
 /**
@@ -290,14 +291,15 @@ export function deleteSubsMatching_P(pubsub, regex, page_size = 100, concurrency
         return s_name.match(regex);
     }
 
-    let delete_P = function delete_P(allsubs) {
+    function delete_P(allsubs) {
 
         let del_subs = _R.filter(isSubscriptionMatching, allsubs);
+
         return _Promise.resolve(del_subs)
             .map((sub) => {
                 return deleteSubscription_P(sub);
             }, {concurrency});
     };
 
-    return processSubs_P(pubsub, delete_P, {page_size});
+    return processSubs_P(pubsub, delete_P, {pageSize: page_size});
 }
