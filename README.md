@@ -1,5 +1,5 @@
 # oakpubsub
-A partial [gcloud-node](https://github.com/GoogleCloudPlatform/gcloud-node) (google cloud) pubsub wrapper with bluebird promises. Only does minimally what we need, no guarantees expressed or implied. Pull Requests for expanded functions/features are welcome.
+A partial [gcloud-node](https://github.com/GoogleCloudPlatform/gcloud-node) (google cloud) pubsub wrapper with bluebird promises, in functional style. Only does minimally what we need, no guarantees expressed or implied. Pull Requests for expanded functions/features are welcome.
 
 See tests for usage.
 
@@ -198,7 +198,7 @@ Helper to get multiple pubsub topics and process them asynchronously
 | Param | Type | Description |
 | --- | --- | --- |
 | pubsub | <code>Object</code> | gcloud-node pubsub object |
-| worker_P | <code>Promise</code> &#124; <code>function</code> | a worker function or promise that handles the response topic array |
+| worker_P | <code>Promise</code> &#124; <code>function</code> | a function or promise processing each array of topics |
 | [query_options] | <code>Object</code> | additional gcloud-node pubsub query options |
 
 <a name="module_oakpubsub..processSubs_P"></a>
@@ -211,7 +211,7 @@ Helper to get multiple pubsub subscriptions and process them asynchronously
 | Param | Type | Description |
 | --- | --- | --- |
 | pubsub | <code>Object</code> | gcloud-node pubsub object |
-| worker_P | <code>Promise</code> &#124; <code>function</code> | a worker function or promise that handles the response topic array |
+| worker_P | <code>Promise</code> &#124; <code>function</code> | a function or promise processing each array of subscriptions |
 | [query_options] | <code>Object</code> | additional gcloud-node pubsub query options |
 
 <a name="module_oakpubsub..deleteTopicsMatching_P"></a>

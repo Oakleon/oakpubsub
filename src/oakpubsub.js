@@ -175,7 +175,7 @@ export function makeMessage(data, attributes = undefined) {
 /**
  * Helper to get multiple pubsub topics and process them asynchronously
  * @param {Object} pubsub gcloud-node pubsub object
- * @param {(Promise|function)} worker_P - a worker function or promise that handles the response topic array
+ * @param {(Promise|function)} worker_P - a function or promise processing each array of topics
  * @param {Object} [query_options] - additional gcloud-node pubsub query options
  * @returns {Promise} resolving to the final apiResponse
 **/
@@ -207,7 +207,7 @@ export function processTopics_P(pubsub, worker_P, query_options = {}) {
 /**
  * Helper to get multiple pubsub subscriptions and process them asynchronously
  * @param {Object} pubsub gcloud-node pubsub object
- * @param {(Promise|function)} worker_P - a worker function or promise that handles the response topic array
+ * @param {(Promise|function)} worker_P - a function or promise processing each array of subscriptions
  * @param {Object} [query_options] - additional gcloud-node pubsub query options
  * @returns {Promise} resolving to the final apiResponse
 **/
@@ -217,13 +217,13 @@ export function processSubs_P(pubsub, worker_P, query_options = {}) {
 
     let fun = function(resolve, reject) {
 
-        async function onComplete(error, topics, nextQuery, apiResponse) {
+        async function onComplete(error, subscriptions, nextQuery, apiResponse) {
 
             if (error) {
                 return reject(error);
             }
 
-            await worker_P(topics);
+            await worker_P(subscriptions);
 
             if (!nextQuery) {
                 return resolve(apiResponse);
