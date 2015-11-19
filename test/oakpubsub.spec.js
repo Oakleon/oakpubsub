@@ -49,21 +49,25 @@ describe('Oakpubsub', function() {
     let test_message1          = _R.clone(original_test_message1);
     let test_message1_id;
 
-    before(async () => {
+    before(() => {
 
         // set global var
         pubsub = _Oakpubsub.getPubsub(get_init_options());
         _Assert(pubsub);
 
         // Cleanup after any previously failed tests
-        await _Oakpubsub.deleteTopicsMatching_P(pubsub, `^${_topic_prefix}`);
-        await _Oakpubsub.deleteSubsMatching_P(pubsub, `^${_subscription_name}`);
+        let p1 = _Oakpubsub.deleteTopicsMatching_P(pubsub, `^${_topic_prefix}`);
+        let p2 = _Oakpubsub.deleteSubsMatching_P(pubsub, `^${_subscription_name}`);
+
+        return _Promise.all([p1,p2]);
     });
 
     // Delete test subscription and topics
-    after(async () => {
-        await _Oakpubsub.deleteSubsMatching_P(pubsub, `^${_subscription_name}`);
-        await _Oakpubsub.deleteTopicsMatching_P(pubsub, `^${_topic_prefix}`);
+    after(() => {
+        let p1 = _Oakpubsub.deleteSubsMatching_P(pubsub, `^${_subscription_name}`);
+        let p2 =  _Oakpubsub.deleteTopicsMatching_P(pubsub, `^${_topic_prefix}`);
+
+        return _Promise.all([p1,p2]);
     });
 
 
@@ -201,7 +205,7 @@ describe('Oakpubsub', function() {
         });
     });
 
-    describe('#Oakpubsub.publish_P(), #Oakpubsub.pull_P() and ack_P()', function(){
+    describe('#Oakpubsub.publish_P(), pull_P(), resetMessages() and ack_P()', function(){
         let ack_id;
 
         it('publish a message to pubsub', function(done){
@@ -224,7 +228,7 @@ describe('Oakpubsub', function() {
             });
         });
 
-        it('pulls a message from pubsub', function(done){
+        it('pulls messages from pubsub and resets them', function(done){
 
             _Oakpubsub.pull_P(subscription_g)
             .then(function(messages) {
@@ -240,6 +244,12 @@ describe('Oakpubsub', function() {
                 _Assert(_R.equals(m.data, original_test_message1.data));
                 _Assert(_R.equals(m.attributes, original_test_message1.attributes));
 
+                return messages;
+            })
+            .then((messages) => {
+                let ready_for_publish = _Oakpubsub.resetMessages(messages);
+                let m                 = ready_for_publish[0];
+                _Assert(_R.equals(m, original_test_message1));
                 done();
             })
             .catch(function(e) {

@@ -25,6 +25,8 @@ oakpubsub module.
   * [~ack_P(subscription, acknowledge)](#module_oakpubsub..ack_P) ⇒ <code>Promise</code>
   * [~pull_P(subscription, [options])](#module_oakpubsub..pull_P) ⇒ <code>Promise</code>
   * [~makeMessage(data, [attributes])](#module_oakpubsub..makeMessage) ⇒ <code>Object</code>
+  * [~resetMessages(messages)](#module_oakpubsub..resetMessages) ⇒ <code>Array.&lt;Object&gt;</code>
+  * [~resetMessage(message)](#module_oakpubsub..resetMessage) ⇒ <code>Object</code>
   * [~processTopics_P(pubsub, worker_P, [query_options])](#module_oakpubsub..processTopics_P) ⇒ <code>Promise</code>
   * [~processSubs_P(pubsub, worker_P, [query_options])](#module_oakpubsub..processSubs_P) ⇒ <code>Promise</code>
   * [~deleteTopicsMatching_P(pubsub, regex, [page_size], [concurrency])](#module_oakpubsub..deleteTopicsMatching_P) ⇒ <code>Promise</code>
@@ -188,6 +190,28 @@ Utility to create a message object
 | data | <code>string</code> &#124; <code>number</code> &#124; <code>array</code> &#124; <code>Object</code> | to publish (gcloud-node will JSON encode/decode for you) |
 | [attributes] | <code>Object</code> | additional key-value attributes attached to the message |
 
+<a name="module_oakpubsub..resetMessages"></a>
+### oakpubsub~resetMessages(messages) ⇒ <code>Array.&lt;Object&gt;</code>
+Utility to create an array of message objects from previously pulled messages
+
+**Kind**: inner method of <code>[oakpubsub](#module_oakpubsub)</code>  
+**Returns**: <code>Array.&lt;Object&gt;</code> - messages that can be used in publish_P()  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| messages | <code>Array.&lt;Object&gt;</code> | returned by pull_P |
+
+<a name="module_oakpubsub..resetMessage"></a>
+### oakpubsub~resetMessage(message) ⇒ <code>Object</code>
+Utility to create a publishable message object from a previously pulled message
+
+**Kind**: inner method of <code>[oakpubsub](#module_oakpubsub)</code>  
+**Returns**: <code>Object</code> - message object that can be used in publish_P()  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| message | <code>Object</code> | returned by pull_P |
+
 <a name="module_oakpubsub..processTopics_P"></a>
 ### oakpubsub~processTopics_P(pubsub, worker_P, [query_options]) ⇒ <code>Promise</code>
 Helper to get multiple pubsub topics and process them asynchronously
@@ -199,7 +223,7 @@ Helper to get multiple pubsub topics and process them asynchronously
 | --- | --- | --- |
 | pubsub | <code>Object</code> | gcloud-node pubsub object |
 | worker_P | <code>Promise</code> &#124; <code>function</code> | a function or promise processing each array of topics |
-| [query_options] | <code>Object</code> | additional gcloud-node pubsub query options |
+| [query_options] | <code>Object</code> | additional gcloud-node pubsub query options for pubsub.getTopics() |
 
 <a name="module_oakpubsub..processSubs_P"></a>
 ### oakpubsub~processSubs_P(pubsub, worker_P, [query_options]) ⇒ <code>Promise</code>
@@ -212,7 +236,7 @@ Helper to get multiple pubsub subscriptions and process them asynchronously
 | --- | --- | --- |
 | pubsub | <code>Object</code> | gcloud-node pubsub object |
 | worker_P | <code>Promise</code> &#124; <code>function</code> | a function or promise processing each array of subscriptions |
-| [query_options] | <code>Object</code> | additional gcloud-node pubsub query options |
+| [query_options] | <code>Object</code> | additional gcloud-node pubsub query options for pubsub.getSubscriptions() |
 
 <a name="module_oakpubsub..deleteTopicsMatching_P"></a>
 ### oakpubsub~deleteTopicsMatching_P(pubsub, regex, [page_size], [concurrency]) ⇒ <code>Promise</code>

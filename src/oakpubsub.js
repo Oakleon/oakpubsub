@@ -1,5 +1,6 @@
 "use strict";
 
+import _Arrify from 'arrify';
 import _Gcloud from 'gcloud';
 import _Promise from 'bluebird';
 import _R from 'ramda';
@@ -173,10 +174,29 @@ export function makeMessage(data, attributes = undefined) {
 }
 
 /**
+ * Utility to create an array of message objects from previously pulled messages, useful for pubsub message passing
+ * @param {Object[]} messages returned by pull_P()
+ * @returns {Object[]} messages that can be used in publish_P()
+**/
+export function resetMessages(messages) {
+    messages = _Arrify(messages);
+    return messages.map(resetMessage);
+}
+
+/**
+ * Utility to create a publishable message object from a previously pulled message
+ * @param {Object} message returned by pull_P()
+ * @returns {Object} message object that can be used in publish_P()
+**/
+export function resetMessage(message) {
+    return {data: message.data, attributes: message.attributes};
+}
+
+/**
  * Helper to get multiple pubsub topics and process them asynchronously
  * @param {Object} pubsub gcloud-node pubsub object
  * @param {(Promise|function)} worker_P - a function or promise processing each array of topics
- * @param {Object} [query_options] - additional gcloud-node pubsub query options
+ * @param {Object} [query_options] - additional gcloud-node pubsub query options for pubsub.getTopics()
  * @returns {Promise} resolving to the final apiResponse
 **/
 export function processTopics_P(pubsub, worker_P, query_options = {}) {
@@ -208,7 +228,7 @@ export function processTopics_P(pubsub, worker_P, query_options = {}) {
  * Helper to get multiple pubsub subscriptions and process them asynchronously
  * @param {Object} pubsub gcloud-node pubsub object
  * @param {(Promise|function)} worker_P - a function or promise processing each array of subscriptions
- * @param {Object} [query_options] - additional gcloud-node pubsub query options
+ * @param {Object} [query_options] - additional gcloud-node pubsub query options for pubsub.getSubscriptions()
  * @returns {Promise} resolving to the final apiResponse
 **/
 export function processSubs_P(pubsub, worker_P, query_options = {}) {
