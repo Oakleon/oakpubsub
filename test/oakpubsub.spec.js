@@ -205,8 +205,8 @@ describe('Oakpubsub', function() {
         });
     });
 
-    describe('#Oakpubsub.publish_P(), pull_P(), resetMessages() and ack_P()', function(){
-        let ack_id;
+    describe('#Oakpubsub.publish_P(), pull_P(), resetMessages(), ack_P(), and pluckAcks()', function(){
+        let ack_ids;
 
         it('publish a message to pubsub', function(done){
 
@@ -236,9 +236,9 @@ describe('Oakpubsub', function() {
                 _Assert(messages);
 
                 let m = messages[0];
-                ack_id = m.ackId;
+                ack_ids = _Oakpubsub.pluckAcks(messages);
 
-                _Assert(ack_id);
+                _Assert(ack_ids[0]);
                 _Assert(m.id === test_message1_id);
 
                 _Assert(_R.equals(m.data, original_test_message1.data));
@@ -259,7 +259,7 @@ describe('Oakpubsub', function() {
 
         it('acks a message from pubsub', function(done){
 
-            _Oakpubsub.ack_P(subscription_g, ack_id)
+            _Oakpubsub.ack_P(subscription_g, ack_ids)
             .then(function(r) {
                 _Assert(r);
                 done();

@@ -25,6 +25,7 @@ oakpubsub module.
   * [~ack_P(subscription, acknowledge)](#module_oakpubsub..ack_P) ⇒ <code>Promise</code>
   * [~pull_P(subscription, [options])](#module_oakpubsub..pull_P) ⇒ <code>Promise</code>
   * [~makeMessage(data, [attributes])](#module_oakpubsub..makeMessage) ⇒ <code>Object</code>
+  * [~pluckAcks(message)](#module_oakpubsub..pluckAcks) ⇒ <code>Array.&lt;string&gt;</code>
   * [~resetMessages(messages)](#module_oakpubsub..resetMessages) ⇒ <code>Array.&lt;Object&gt;</code>
   * [~resetMessage(message)](#module_oakpubsub..resetMessage) ⇒ <code>Object</code>
   * [~processTopics_P(pubsub, worker_P, [query_options])](#module_oakpubsub..processTopics_P) ⇒ <code>Promise</code>
@@ -190,16 +191,27 @@ Utility to create a message object
 | data | <code>string</code> &#124; <code>number</code> &#124; <code>array</code> &#124; <code>Object</code> | to publish (gcloud-node will JSON encode/decode for you) |
 | [attributes] | <code>Object</code> | additional key-value attributes attached to the message |
 
+<a name="module_oakpubsub..pluckAcks"></a>
+### oakpubsub~pluckAcks(message) ⇒ <code>Array.&lt;string&gt;</code>
+Utility to pluck ackIds from messages
+
+**Kind**: inner method of <code>[oakpubsub](#module_oakpubsub)</code>  
+**Returns**: <code>Array.&lt;string&gt;</code> - array of ackIds, can be passed to ack_P()  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| message | <code>Object</code> &#124; <code>Array.&lt;Object&gt;</code> | or messages returned by pull_P() |
+
 <a name="module_oakpubsub..resetMessages"></a>
 ### oakpubsub~resetMessages(messages) ⇒ <code>Array.&lt;Object&gt;</code>
-Utility to create an array of message objects from previously pulled messages
+Utility to create an array of message objects from previously pulled messages, useful for pubsub message passing
 
 **Kind**: inner method of <code>[oakpubsub](#module_oakpubsub)</code>  
 **Returns**: <code>Array.&lt;Object&gt;</code> - messages that can be used in publish_P()  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| messages | <code>Array.&lt;Object&gt;</code> | returned by pull_P |
+| messages | <code>Array.&lt;Object&gt;</code> | returned by pull_P() |
 
 <a name="module_oakpubsub..resetMessage"></a>
 ### oakpubsub~resetMessage(message) ⇒ <code>Object</code>
@@ -210,7 +222,7 @@ Utility to create a publishable message object from a previously pulled message
 
 | Param | Type | Description |
 | --- | --- | --- |
-| message | <code>Object</code> | returned by pull_P |
+| message | <code>Object</code> | returned by pull_P() |
 
 <a name="module_oakpubsub..processTopics_P"></a>
 ### oakpubsub~processTopics_P(pubsub, worker_P, [query_options]) ⇒ <code>Promise</code>

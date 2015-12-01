@@ -3,7 +3,7 @@
 import _Arrify from 'arrify';
 import _Gcloud from 'gcloud';
 import _Promise from 'bluebird';
-import _R from 'ramda';
+import _Ram from 'ramda';
 
 //workaround for errors not propagating from async await
 process.on('unhandledRejection', err => { throw err; });
@@ -174,6 +174,16 @@ export function makeMessage(data, attributes = undefined) {
 }
 
 /**
+ * Utility to pluck ackIds from messages
+ * @param {(Object|Object[])} message or messages returned by pull_P()
+ * @returns {string[]} array of ackIds, can be passed to ack_P()
+**/
+export function pluckAcks(messages) {
+    messages = _Arrify(messages);
+    return _Ram.pluck('ackId')(messages);
+}
+
+/**
  * Utility to create an array of message objects from previously pulled messages, useful for pubsub message passing
  * @param {Object[]} messages returned by pull_P()
  * @returns {Object[]} messages that can be used in publish_P()
@@ -279,7 +289,7 @@ export function deleteTopicsMatching_P(pubsub, regex, page_size = 100, concurren
 
     function delete_P(alltopics) {
 
-        let del_topics = _R.filter(isTopicMatching, alltopics);
+        let del_topics = _Ram.filter(isTopicMatching, alltopics);
 
         return _Promise.resolve(del_topics)
             .map((topic) => {
@@ -313,7 +323,7 @@ export function deleteSubsMatching_P(pubsub, regex, page_size = 100, concurrency
 
     function delete_P(allsubs) {
 
-        let del_subs = _R.filter(isSubscriptionMatching, allsubs);
+        let del_subs = _Ram.filter(isSubscriptionMatching, allsubs);
 
         return _Promise.resolve(del_subs)
             .map((sub) => {
