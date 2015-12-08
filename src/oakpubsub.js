@@ -213,7 +213,7 @@ export function processTopics_P(pubsub, worker_P, query_options = {}) {
 
     query_options.autoPaginate = false;
 
-    let fun = function(resolve, reject) {
+    function fun(resolve, reject) {
 
         async function onComplete(error, topics, nextQuery, apiResponse) {
 
@@ -245,7 +245,7 @@ export function processSubs_P(pubsub, worker_P, query_options = {}) {
 
     query_options.autoPaginate = false;
 
-    let fun = function(resolve, reject) {
+    function fun(resolve, reject) {
 
         async function onComplete(error, subscriptions, nextQuery, apiResponse) {
 

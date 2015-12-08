@@ -6,7 +6,6 @@ import _R from 'ramda';
 
 import * as _Oakpubsub from '../src/oakpubsub';
 
-
 function read_project_id_from_file(filename) {
 
     if (!_Fs.existsSync(filename)) {
@@ -24,9 +23,10 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
+let rando              = getRandomInt(1,99999);
 let _topic_prefix      = `oakpubsub-spec-topic`;
-let _topic_name        = `${_topic_prefix}_${getRandomInt(1,99999)}`;
-let _subscription_name = "oakpubsub-spec-subscription";
+let _topic_name        = `${_topic_prefix}_${rando}`;
+let _subscription_name = `oakpubsub-spec-subscription_${rando}`;
 
 function get_init_options() {
     if (_use_auth_file) {
@@ -49,17 +49,18 @@ describe('Oakpubsub', function() {
     let test_message1          = _R.clone(original_test_message1);
     let test_message1_id;
 
-    before(() => {
+    before(async () => {
 
         // set global var
         pubsub = _Oakpubsub.getPubsub(get_init_options());
         _Assert(pubsub);
 
-        // Cleanup after any previously failed tests
-        let p1 = _Oakpubsub.deleteTopicsMatching_P(pubsub, `^${_topic_prefix}`);
-        let p2 = _Oakpubsub.deleteSubsMatching_P(pubsub, `^${_subscription_name}`);
+        topic_g = await _Oakpubsub.createTopic_P(pubsub, _topic_name);
+        _Assert(topic_g);
+        _Assert(topic_g.name);
 
-        return _Promise.all([p1,p2]);
+        subscription_g = await _Oakpubsub.createSubscription_P(topic_g, _subscription_name, {reuseExisting: true});
+        _Assert(subscription_g);
     });
 
     // Delete test subscription and topics
@@ -70,28 +71,11 @@ describe('Oakpubsub', function() {
         return _Promise.all([p1,p2]);
     });
 
-
-    describe('#Oakpubsub.createTopic_P()', function(){
-
-        it('creates and returns a pubsub topic', function(done){
-            _Oakpubsub.createTopic_P(pubsub, _topic_name)
-            .then(function(t) {
-                topic_g = t;  //Set global
-                _Assert(topic_g);
-                _Assert(topic_g.projectId === _project_id);
-                done();
-            })
-            .catch(function(e) {
-                done(e);
-            });
-        });
-    });
-
     describe('#Oakpubsub.getTopic()', function(){
         it('returns a pubsub topic', function(){
             let t2 = _Oakpubsub.getTopic(pubsub, _topic_name);
             _Assert(t2);
-            _Assert(t2.projectId === _project_id);
+            _Assert(t2.id === _topic_name);
         });
     });
 
@@ -100,12 +84,116 @@ describe('Oakpubsub', function() {
             _Oakpubsub.getOrCreateTopic_P(pubsub, _topic_name)
             .then(function(t2) {
                 _Assert(t2);
-                _Assert(t2.projectId === _project_id);
+                _Assert(t2.id === _topic_name);
                 done();
             })
             .catch(function(e) {
                 done(e);
             });
+        });
+    });
+
+    describe('#Oakpubsub.publish_P(), pull_P(), resetMessages(), ack_P(), and pluckAcks()', function(){
+        let ack_ids;
+
+        it('publish a message to pubsub', function(done){
+
+            let message_ids;
+
+            _Oakpubsub.publish_P(topic_g, test_message1)
+            .then(function(message_ids) {
+                _Assert(message_ids);
+
+                _Assert(Array.isArray(message_ids));
+                _Assert(message_ids.length > 0);
+
+                test_message1_id = message_ids[0];
+                done();
+            })
+            .catch(function(e) {
+                done(e);
+            });
+        });
+
+        it('pulls messages from pubsub and resets them', function(done){
+
+            return _Oakpubsub.pull_P(subscription_g)
+            .then(function(messages) {
+
+                _Assert(messages);
+
+                let m = messages[0];
+                ack_ids = _Oakpubsub.pluckAcks(messages);
+
+                _Assert(ack_ids[0]);
+                _Assert(m.id === test_message1_id);
+
+                _Assert(_R.equals(m.data, original_test_message1.data));
+                _Assert(_R.equals(m.attributes, original_test_message1.attributes));
+
+                return messages;
+            })
+            .then((messages) => {
+                let ready_for_publish = _Oakpubsub.resetMessages(messages);
+                let m                 = ready_for_publish[0];
+                _Assert(_R.equals(m, original_test_message1));
+                done();
+            })
+            .catch(function(e) {
+                done(e);
+            });
+        });
+
+        it('acks a message from pubsub', function(done){
+
+            _Oakpubsub.ack_P(subscription_g, ack_ids)
+            .then(function(r) {
+                _Assert(r);
+                done();
+            })
+            .catch(function(e) {
+                done(e);
+            });
+        });
+    });
+
+    describe('tests workflow with more message types', function(){
+
+        it('message data=object, no attributes', async function(){
+
+            let original_test_message2 = _Oakpubsub.makeMessage({o: 'message has object with no attributes'});
+            let test_message2          = _R.clone(original_test_message2);
+
+            await _Oakpubsub.publish_P(topic_g, test_message2);
+            let messages = await _Oakpubsub.pull_P(subscription_g);
+            let message  = messages.pop();
+
+            _Assert(_R.equals(message.data, original_test_message2.data));
+            _Assert(_R.equals(message.attributes, original_test_message2.attributes));
+
+            await _Oakpubsub.ack_P(subscription_g, message.ackId);
+        });
+
+        it('array of messages: int and string', async function(){
+
+            let d1 =100;
+            let d2 = "string";
+
+            let message1 = _Oakpubsub.makeMessage(d1);
+            let message2 = _Oakpubsub.makeMessage(d2);
+
+            await _Oakpubsub.publish_P(topic_g, [message1, message2]);
+            let messages = await _Oakpubsub.pull_P(subscription_g);
+
+            let m_ids    = messages.map(
+                (m) => {    //both test the pulled data and get the ackIds
+                    _Assert(m.data === d1 || m.data === d2);
+                    return m.ackId;
+                }
+            );
+            _Assert.deepStrictEqual(messages.length, 2);
+
+            await _Oakpubsub.ack_P(subscription_g, m_ids);
         });
     });
 
@@ -190,123 +278,4 @@ describe('Oakpubsub', function() {
         });
     });
 
-    describe('#Oakpubsub.createSubscription_P()', function(){
-        it('returns a pubsub subscription', function(done){
-            _Oakpubsub.createSubscription_P(topic_g, _subscription_name, {reuseExisting: true})
-            .then(function(s) {
-
-                subscription_g = s;   //set global
-                _Assert(subscription_g);
-                done();
-            })
-            .catch(function(e) {
-                done(e);
-            });
-        });
-    });
-
-    describe('#Oakpubsub.publish_P(), pull_P(), resetMessages(), ack_P(), and pluckAcks()', function(){
-        let ack_ids;
-
-        it('publish a message to pubsub', function(done){
-
-            let message_ids;
-
-            _Oakpubsub.publish_P(topic_g, test_message1)
-            .then(function(message_ids) {
-                _Assert(message_ids);
-
-                _Assert(Array.isArray(message_ids));
-                _Assert(message_ids.length > 0);
-
-                test_message1_id = message_ids[0];
-
-                done();
-            })
-            .catch(function(e) {
-                done(e);
-            });
-        });
-
-        it('pulls messages from pubsub and resets them', function(done){
-
-            _Oakpubsub.pull_P(subscription_g)
-            .then(function(messages) {
-
-                _Assert(messages);
-
-                let m = messages[0];
-                ack_ids = _Oakpubsub.pluckAcks(messages);
-
-                _Assert(ack_ids[0]);
-                _Assert(m.id === test_message1_id);
-
-                _Assert(_R.equals(m.data, original_test_message1.data));
-                _Assert(_R.equals(m.attributes, original_test_message1.attributes));
-
-                return messages;
-            })
-            .then((messages) => {
-                let ready_for_publish = _Oakpubsub.resetMessages(messages);
-                let m                 = ready_for_publish[0];
-                _Assert(_R.equals(m, original_test_message1));
-                done();
-            })
-            .catch(function(e) {
-                done(e);
-            });
-        });
-
-        it('acks a message from pubsub', function(done){
-
-            _Oakpubsub.ack_P(subscription_g, ack_ids)
-            .then(function(r) {
-                _Assert(r);
-                done();
-            })
-            .catch(function(e) {
-                done(e);
-            });
-        });
-    });
-
-    describe('tests workflow with more message types', function(){
-
-        it('message data=object, no attributes', async function(){
-
-            let original_test_message2 = _Oakpubsub.makeMessage({o: 'message has object with no attributes'});
-            let test_message2          = _R.clone(original_test_message2);
-
-            await _Oakpubsub.publish_P(topic_g, test_message2);
-            let messages = await _Oakpubsub.pull_P(subscription_g);
-            let message  = messages.pop();
-
-            _Assert(_R.equals(message.data, original_test_message2.data));
-            _Assert(_R.equals(message.attributes, original_test_message2.attributes));
-
-            await _Oakpubsub.ack_P(subscription_g, message.ackId);
-        });
-
-        it('array of messages: int and string', async function(){
-
-            let d1 =100;
-            let d2 = "string";
-
-            let message1 = _Oakpubsub.makeMessage(d1);
-            let message2 = _Oakpubsub.makeMessage(d2);
-
-            await _Oakpubsub.publish_P(topic_g, [message1, message2]);
-            let messages = await _Oakpubsub.pull_P(subscription_g);
-
-            let m_ids    = messages.map(
-                (m) => {    //both test the pulled data and get the ackIds
-                    _Assert(m.data === d1 || m.data === d2);
-                    return m.ackId;
-                }
-            );
-            _Assert.deepStrictEqual(messages.length, 2);
-
-            await _Oakpubsub.ack_P(subscription_g, m_ids);
-        });
-    });
 });
