@@ -59,7 +59,7 @@ describe('Oakpubsub', function() {
         _Assert(topic_g);
         _Assert(topic_g.name);
 
-        subscription_g = await _Oakpubsub.createSubscription_P(topic_g, _subscription_name, {reuseExisting: true});
+        subscription_g = await _Oakpubsub.createSubscription_P(topic_g, _subscription_name, {reuseExisting: true, timeout: 10000, encoding: 'utf-8'});
         _Assert(subscription_g);
     });
 
