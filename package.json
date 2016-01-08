@@ -27,7 +27,7 @@
     "arrify": "^1.0.0",
     "babel-runtime": "^5.8.29",
     "bluebird": "^3.0.6",
-    "gcloud": "^0.26.1",
+    "gcloud": "^0.27.0",
     "ramda": "^0.18.0"
   },
   "devDependencies": {
