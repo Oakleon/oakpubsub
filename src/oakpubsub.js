@@ -135,7 +135,7 @@ export function ack_P(subscription, ackIds) {
 /**
  * Remote call to pull messages from server
  * @param {Object} subscription gcloud-node subscription object
- * @param {Object} [options] - additional gcloud-node options for subscription#pull()
+ * @param {Object} [options] - additional gcloud-node options for subscription#pull(): maxResults, returnImmediately
  * @returns {Promise} resolving to array of messages returned by gcloud-node subscription#pull()
 **/
 export function pull_P(subscription, options = {}) {
