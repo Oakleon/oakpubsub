@@ -29,6 +29,7 @@ let _topic_name        = `${_topic_prefix}_${rando}`;
 let _subscription_name = `oakpubsub-spec-subscription_${rando}`;
 
 function get_init_options() {
+
     if (_use_auth_file) {
         return { projectId: _project_id, keyFilename: _auth_filename };
     }
@@ -75,7 +76,7 @@ describe('Oakpubsub', function() {
         it('returns a pubsub topic', function(){
             let t2 = _Oakpubsub.getTopic(pubsub, _topic_name);
             _Assert(t2);
-            _Assert(t2.id === _topic_name);
+            _Assert(t2.name);
         });
     });
 
@@ -84,7 +85,7 @@ describe('Oakpubsub', function() {
             _Oakpubsub.getOrCreateTopic_P(pubsub, _topic_name)
             .then(function(t2) {
                 _Assert(t2);
-                _Assert(t2.id === _topic_name);
+                _Assert(t2.name);
                 done();
             })
             .catch(function(e) {
@@ -97,8 +98,6 @@ describe('Oakpubsub', function() {
         let ack_ids;
 
         it('publish a message to pubsub', function(done){
-
-            let message_ids;
 
             _Oakpubsub.publish_P(topic_g, test_message1)
             .then(function(message_ids) {
@@ -229,7 +228,7 @@ describe('Oakpubsub', function() {
             function worker_P(topics) {
                 let tts       = _R.filter(isTestTopic, topics);
                 all_test_tops = all_test_tops.concat(tts);
-            };
+            }
 
             await _Oakpubsub.processTopics_P(pubsub, worker_P, {pageSize: 10});
             _Assert(all_test_tops.length >= num_topics);
@@ -254,8 +253,7 @@ describe('Oakpubsub', function() {
                 subscription_names.push(`${_subscription_name}_${i}`);
             });
 
-            await _Promise.resolve(subscription_names)
-            .map((name) => {
+            await _Promise.map(subscription_names, (name) => {
                 return _Oakpubsub.createSubscription_P(topic, name);
             });
 
@@ -271,7 +269,7 @@ describe('Oakpubsub', function() {
             function worker_P(subs) {
                 let test_subs = _R.filter(isTestSub, subs);
                 all_test_subs = all_test_subs.concat(test_subs);
-            };
+            }
 
             await _Oakpubsub.processSubs_P(pubsub, worker_P, {pageSize: 10});
             _Assert(all_test_subs.length >= num_subs);

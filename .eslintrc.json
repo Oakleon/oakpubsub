@@ -15,21 +15,24 @@
         "sourceType": "module"
     },
     "rules": {
-        "camelcase": [0],
+        "camelcase": ["off"],
+        "comma-dangle": ["off"],
         "indent": [
-            2,
+            "error",
             4
         ],
         "linebreak-style": [
-            2,
+            "error",
             "unix"
         ],
-        "no-multi-spaces" : [0],
-        "no-use-before-define" : [2, "nofunc"],
-        "no-underscore-dangle" : [0],
-        "quotes" : [0, "single"],
+        "no-console": ["off"],
+        "no-multi-spaces" : ["off"],
+        "no-use-before-define" : ["error", "nofunc"],
+        "no-underscore-dangle" : ["off"],
+        "no-unused-vars": ["warn", {"varsIgnorePattern": "_unused"}],
+        "quotes" : ["off", "single"],
         "semi": [
-            2,
+            "error",
             "always"
         ]
     }

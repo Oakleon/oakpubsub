@@ -148,7 +148,7 @@ export function pull_P(subscription, options = {}) {
  * @param {Object} [attributes] - additional key-value attributes attached to the message
  * @returns {Object} message object that can be used in publish_P()
 **/
-export function makeMessage(data, attributes = undefined) {
+export function makeMessage(data, attributes) {
     return {data, attributes};
 }
 
@@ -206,9 +206,9 @@ export function processTopics_P(pubsub, worker_P, query_options = {}) {
                 return resolve(apiResponse);
             }
             pubsub.getTopics(nextQuery, onComplete);
-        };
+        }
         pubsub.getTopics(query_options, onComplete);
-    };
+    }
 
     return new _Promise(fun);
 }
@@ -238,9 +238,9 @@ export function processSubs_P(pubsub, worker_P, query_options = {}) {
                 return resolve(apiResponse);
             }
             pubsub.getSubscriptions(nextQuery, onComplete);
-        };
+        }
         pubsub.getSubscriptions(query_options, onComplete);
-    };
+    }
 
     return new _Promise(fun);
 }
@@ -274,7 +274,7 @@ export function deleteTopicsMatching_P(pubsub, regex, page_size = 100, concurren
             .map((topic) => {
                 return deleteTopic_P(topic);
             }, {concurrency});
-    };
+    }
 
     return processTopics_P(pubsub, delete_P, {pageSize: page_size});
 }
@@ -308,7 +308,7 @@ export function deleteSubsMatching_P(pubsub, regex, page_size = 100, concurrency
             .map((sub) => {
                 return deleteSubscription_P(sub);
             }, {concurrency});
-    };
+    }
 
     return processSubs_P(pubsub, delete_P, {pageSize: page_size});
 }

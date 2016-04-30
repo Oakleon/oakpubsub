@@ -1,6 +1,6 @@
 {
   "name": "oakpubsub",
-  "version": "0.5.4",
+  "version": "0.6.0",
   "description": "gcloud-node google pubsub functional wrapper using bluebird promises",
   "main": "build/oakpubsub.js",
   "scripts": {
@@ -27,7 +27,7 @@
     "arrify": "^1.0.1",
     "babel-runtime": "^6.6.1",
     "bluebird": "^3.3.5",
-    "gcloud": "^0.27.0",
+    "gcloud": "^0.31.0",
     "ramda": "^0.21.0"
   },
   "devDependencies": {
