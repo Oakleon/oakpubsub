@@ -1,6 +1,6 @@
 {
   "name": "oakpubsub",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "gcloud-node google pubsub functional wrapper using bluebird promises",
   "main": "build/oakpubsub.js",
   "scripts": {
@@ -17,27 +17,30 @@
     "google",
     "pubsub"
   ],
-  "author": "chris@oakleon.com",
+  "author": "chrishiestand@gmail.com",
   "bugs": {
     "url": "https://github.com/Oakleon/oakpubsub/issues"
   },
   "homepage": "https://github.com/Oakleon/oakpubsub#readme",
   "license": "MIT",
   "dependencies": {
-    "arrify": "^1.0.0",
-    "babel-runtime": "^5.8.29",
-    "bluebird": "^3.0.6",
+    "arrify": "^1.0.1",
+    "babel-runtime": "^6.6.1",
+    "bluebird": "^3.3.5",
     "gcloud": "^0.27.0",
-    "ramda": "^0.18.0"
+    "ramda": "^0.21.0"
   },
   "devDependencies": {
-    "babel": "^5.8.29",
-    "babel-eslint": "^4.1.3",
-    "eslint": "^1.8.0",
-    "gulp": "^3.9.0",
-    "gulp-babel": "^5.2.1",
-    "jsdoc-to-markdown": "^1.3.3",
-    "mocha": "^2.3.3",
-    "source-map-support": "^0.3.1"
+    "babel": "^6.5.2",
+    "babel-core": "^6.7.6",
+    "babel-eslint": "^6.0.2",
+    "babel-plugin-transform-runtime": "^6.7.5",
+    "babel-preset-es2015-node4": "^2.1.0",
+    "babel-preset-stage-3": "^6.5.0",
+    "eslint": "^2.7.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "jsdoc-to-markdown": "^1.3.6",
+    "mocha": "^2.4.5"
   }
 }

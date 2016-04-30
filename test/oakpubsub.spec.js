@@ -17,7 +17,7 @@ function read_project_id_from_file(filename) {
 
 let _auth_filename = process.env.GCLOUD_AUTH_FILE || __dirname + '/auth-secret.json';
 let _use_auth_file = _Fs.existsSync(_auth_filename);
-let _project_id    = process.env.GCLOUD_PROJECT_ID || read_project_id_from_file(__dirname + '/auth-project.json');
+let _project_id    = process.env.GCLOUD_PROJECT_ID || read_project_id_from_file(__dirname + '/auth-project');
 
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
