@@ -270,10 +270,9 @@ export function deleteTopicsMatching_P(pubsub, regex, page_size = 100, concurren
 
         let del_topics = _Ram.filter(isTopicMatching, alltopics);
 
-        return _Promise.resolve(del_topics)
-            .map((topic) => {
-                return deleteTopic_P(topic);
-            }, {concurrency});
+        return _Promise.map(del_topics, (topic) => {
+            return deleteTopic_P(topic);
+        }, {concurrency});
     }
 
     return processTopics_P(pubsub, delete_P, {pageSize: page_size});
@@ -304,10 +303,9 @@ export function deleteSubsMatching_P(pubsub, regex, page_size = 100, concurrency
 
         let del_subs = _Ram.filter(isSubscriptionMatching, allsubs);
 
-        return _Promise.resolve(del_subs)
-            .map((sub) => {
-                return deleteSubscription_P(sub);
-            }, {concurrency});
+        return _Promise.map(del_subs, (sub) => {
+            return deleteSubscription_P(sub);
+        }, {concurrency});
     }
 
     return processSubs_P(pubsub, delete_P, {pageSize: page_size});

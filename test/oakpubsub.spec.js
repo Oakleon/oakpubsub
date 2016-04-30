@@ -211,8 +211,7 @@ describe('Oakpubsub', function() {
                 topic_names.push(`${_topic_name}_${i}`);
             });
 
-            await _Promise.resolve(topic_names)
-            .map((topic_name) => {
+            await _Promise.map(topic_names, (topic_name) => {
                 return _Oakpubsub.createTopic_P(pubsub, topic_name);
             }, {concurrency: 5});
 
