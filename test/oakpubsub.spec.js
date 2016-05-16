@@ -165,12 +165,12 @@ describe('Oakpubsub', function() {
 
             await _Oakpubsub.publish_P(topic_g, test_message2);
             let messages = await _Oakpubsub.pull_P(subscription_g);
-            let message  = messages.pop();
+            let pulled_message  = messages.pop();
 
-            _Assert(_R.equals(message.data, original_test_message2.data));
-            _Assert(_R.equals(message.attributes, original_test_message2.attributes));
+            _Assert(_R.equals(pulled_message.data, original_test_message2.data));
+            _Assert(_R.equals(pulled_message.attributes, original_test_message2.attributes));
 
-            await _Oakpubsub.ack_P(subscription_g, message.ackId);
+            await _Oakpubsub.ack_P(subscription_g, pulled_message.ackId);
         });
 
         it('array of messages: int and string', async function(){

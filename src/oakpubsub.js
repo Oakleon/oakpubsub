@@ -148,7 +148,7 @@ export function pull_P(subscription, options = {}) {
  * @param {Object} [attributes] - additional key-value attributes attached to the message
  * @returns {Object} message object that can be used in publish_P()
 **/
-export function makeMessage(data, attributes) {
+export function makeMessage(data, attributes = {}) {
     return {data, attributes};
 }
 
